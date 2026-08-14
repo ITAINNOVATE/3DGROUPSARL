@@ -1,0 +1,72 @@
+:root {
+    /* --- Colors --- */
+    /* Primary Brand Colors - Refined for "Premium" depth */
+    --color-primary: #143A2F;
+    /* Deeper, richer green */
+    --color-primary-dark: #0D261F;
+    --color-primary-light: #1E5645;
+
+    /* Secondary & Accent - Sophisticated Gold & Pure White */
+    --color-secondary: #FFFFFF;
+    --color-accent: #C5A028;
+    /* Slightly deeper, more "metallic" gold */
+    --color-accent-light: #E5C35D;
+    --color-accent-dark: #A6851E;
+
+    /* Neutrals & Text - Slate/Zinc inspired for modernity */
+    --color-text: #0F172A;
+    /* Rich Slate 900 */
+    --color-text-light: #475569;
+    /* Slate 600 */
+    --color-text-lighter: #94A3B8;
+    /* Slate 400 */
+
+    /* Backgrounds */
+    --color-bg-light: #F8FAFC;
+    /* Slate 50 */
+    --color-bg-white: #FFFFFF;
+    --color-bg-soft-green: #F0FDF4;
+    --color-bg-surface: #FFFFFF;
+
+    /* Glassmorphism Helpers */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: blur(12px);
+
+    /* --- Typography --- */
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --letter-spacing-tight: -0.02em;
+    --letter-spacing-wide: 0.05em;
+
+    /* --- Spacing System --- */
+    --spacing-xs: 0.5rem;
+    /* 8px */
+    --spacing-sm: 1rem;
+    /* 16px */
+    --spacing-md: 2rem;
+    /* 32px */
+    --spacing-lg: 4rem;
+    /* 64px */
+    --spacing-xl: 8rem;
+    /* 128px */
+    --spacing-section: 6rem;
+
+    /* --- Border Radius --- */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+
+    /* --- Premium Shadows (Layered for organic feel) --- */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    --shadow-accent: 0 10px 20px -5px rgba(197, 160, 40, 0.3);
+
+    /* --- Transitions --- */
+    --transition-fast: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}

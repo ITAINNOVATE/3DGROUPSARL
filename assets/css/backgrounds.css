@@ -1,0 +1,96 @@
+/* ===================================
+   BACKGROUND IMAGES WITH OVERLAYS
+   =================================== */
+
+/* Shared Hero Styles for Consistency */
+.about-hero-bg,
+.services-hero-bg,
+.projects-hero-bg,
+.team-hero-bg,
+.contact-hero-bg {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 450px;
+    /* Increased for more premium spaciousness */
+    padding-top: 120px;
+    /* Increased offset for better framing under header */
+    padding-bottom: 20px;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: -webkit-optimize-contrast;
+    filter: brightness(1.05) contrast(1.1);
+}
+
+/* About Page Background */
+.about-hero-bg {
+    background-image: linear-gradient(rgba(20, 58, 47, 0.7), rgba(20, 58, 47, 0.7)),
+        url('../images/project-teck.jpg');
+}
+
+/* Services Page Background */
+.services-hero-bg {
+    background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
+        url('../images/header-services.png');
+}
+
+/* Projects Page Background */
+.projects-hero-bg {
+    background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
+        url('../images/header-projects.png');
+}
+
+/* Team Page Background */
+.team-hero-bg {
+    background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
+        url('../images/header-team.png');
+}
+
+/* Contact Page Background */
+.contact-hero-bg {
+    background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
+        url('../images/hero-bg.jpg');
+}
+
+/* Text Enhancements */
+.about-hero-bg h1,
+.services-hero-bg h1,
+.projects-hero-bg h1,
+.team-hero-bg h1,
+.contact-hero-bg h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: white;
+    /* Ensure text is white */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.about-hero-bg .lead-text,
+.services-hero-bg .lead-text,
+.projects-hero-bg .lead-text,
+.team-hero-bg .lead-text,
+.contact-hero-bg .lead-text {
+    color: white;
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1.6;
+}
+
+/* Responsive adjustments for background images */
+@media (max-width: 768px) {
+
+    .about-hero-bg,
+    .services-hero-bg,
+    .projects-hero-bg,
+    .team-hero-bg,
+    .contact-hero-bg {
+        background-attachment: scroll;
+        padding: 4rem 0;
+    }
+}

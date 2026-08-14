@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Administration | 3D-GROUPE SARL</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="assets/css/admin.css?v=1.1">
+</head>
+
+<body class="admin-body">
+
+    <!-- ====================================================================
+         1. LOGIN VIEW (Quand l'utilisateur n'est pas connecté)
+         ==================================================================== -->
+    <div id="login-view" class="admin-login-wrapper">
+        <div class="login-card">
+            <img src="assets/images/logo.png" alt="3D-GROUPE SARL" class="login-logo">
+            <div class="login-header">
+                <h2>Espace Admin</h2>
+                <p>Connexion à la plateforme de gestion 3D-GROUPE SARL</p>
+            </div>
+            
+            <form id="login-form" class="login-form">
+                <div id="login-error" style="display: none; color: var(--admin-danger); font-size: 0.85rem; margin-bottom: 1rem;"></div>
+                
+                <div class="form-group">
+                    <label for="login-username">Identifiant / Email</label>
+                    <input type="text" id="login-username" placeholder="admin" required value="admin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required value="3dgroup2026">
+                </div>
+                
+                <button type="submit" class="btn-login">Se Connecter</button>
+            </form>
+
+            <div class="login-credentials-hint">
+                💡 <strong>Accès démonstration :</strong><br>
+                Utilisateur : <code>admin</code> | Mot de passe : <code>3dgroup2026</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         2. ADMIN DASHBOARD LAYOUT (Une fois connecté)
+         ==================================================================== -->
+    <div id="admin-layout" class="admin-layout" style="display: none;">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="admin-sidebar" class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="assets/images/logo.png" alt="3D-GROUPE SARL" class="sidebar-logo">
+                <div class="sidebar-title">
+                    3D-GROUPE
+                    <span>Panneau Administration</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item-btn active" data-tab="dashboard">
+                    <span class="icon">📊</span> Tableau de bord
+                </button>
+                <button class="nav-item-btn" data-tab="projects">
+                    <span class="icon">🌲</span> Gestion des Projets
+                </button>
+                <button class="nav-item-btn" data-tab="team">
+                    <span class="icon">👥</span> Équipe Dirigeante
+                </button>
+                <button class="nav-item-btn" data-tab="services">
+                    <span class="icon">🌱</span> Nos Services
+                </button>
+                <button class="nav-item-btn" data-tab="media">
+                    <span class="icon">🖼️</span> Médiathèque Images
+                </button>
+                <button class="nav-item-btn" data-tab="siteinfo">
+                    <span class="icon">⚙️</span> Infos du Site
+                </button>
+                <button class="nav-item-btn" data-tab="messages">
+                    <span class="icon">📩</span> Boîte de Réception
+                </button>
+                <button class="nav-item-btn" data-tab="backup">
+                    <span class="icon">💾</span> Sauvegarde / JSON
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout">
+                    <span>🚪</span> Déconnexion
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="admin-main">
+            
+            <!-- TOPBAR -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button id="mobile-sidebar-toggle" class="mobile-sidebar-toggle">☰</button>
+                    <h2 id="topbar-title" class="topbar-title">Tableau de bord</h2>
+                </div>
+                <div class="topbar-right">
+                    <a href="index.html" target="_blank" class="btn-secondary btn-action" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; text-decoration: none;">
+                        🌐 Voir le Site
+                    </a>
+                    <div class="user-badge">
+                        <div class="avatar">A</div>
+                        <span>Administrateur</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENT PANES -->
+            <div class="admin-content">
+                
+                <!-- TAB 1: DASHBOARD OVERVIEW -->
+                <div id="tab-dashboard" class="tab-pane active">
+                    <div class="dashboard-header">
+                        <h1>Bienvenue dans votre Espace Admin 👋</h1>
+                        <p>Gérez en toute simplicité le contenu et les images affichés sur la plateforme 3D-GROUPE SARL.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span>Projets Actifs</span>
+                                <h3 id="stat-projects-count">0</h3>
+                            </div>
+                            <div class="stat-icon">🌲</div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-info">
+                                <span>Membres Équipe</span>
+                                <h3 id="stat-team-count">0</h3>
+                            </div>
+                            <div class="stat-icon">👥</div>
+                        </div>
+                        <div class="stat-card accent">
+                            <div class="stat-info">
+                                <span>Services Offerts</span>
+                                <h3 id="stat-services-count">0</h3>
+                            </div>
+                            <div class="stat-icon">🌱</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span>Images Médiathèque</span>
+                                <h3 id="stat-images-count">0</h3>
+                            </div>
+                            <div class="stat-icon">🖼️</div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-info">
+                                <span>Messages Reçus</span>
+                                <h3 id="stat-messages-count">0</h3>
+                            </div>
+                            <div class="stat-icon">📩</div>
+                        </div>
+                    </div>
+
+                    <div class="table-card" style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 0.75rem;">🚀 Actions Rapides</h3>
+                        <p style="color: var(--admin-text-muted); margin-bottom: 1.25rem;">Accédez directement aux sections principales pour effectuer vos mises à jour :</p>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button class="btn-action" onclick="openProjectModal()">➕ Ajouter un Projet</button>
+                            <button class="btn-action btn-secondary" onclick="openTeamModal()">👥 Ajouter un Membre</button>
+                            <button class="btn-action btn-secondary" onclick="openImageModal()">🖼️ Téléverser une Image</button>
+                            <button class="btn-action btn-secondary" onclick="openServiceModal()">🌱 Ajouter un Service</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: PROJECTS MANAGEMENT -->
+                <div id="tab-projects" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Gestion des Projets Agro-Pasto-Forestiers</h2>
+                            <p>Ajoutez, modifiez ou supprimez les projets affichés dans la galerie publique.</p>
+                        </div>
+                        <button class="btn-action" onclick="openProjectModal()">➕ Nouveau Projet</button>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Titre du Projet</th>
+                                        <th>Catégorie</th>
+                                        <th>Localisation</th>
+                                        <th>Superficie</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projects-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: TEAM MANAGEMENT -->
+                <div id="tab-team" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Gestion de l'Équipe Dirigeante</h2>
+                            <p>Gérez les membres de la direction, consultants et responsables techniques.</p>
+                        </div>
+                        <button class="btn-action" onclick="openTeamModal()">➕ Nouveau Membre</button>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Photo</th>
+                                        <th>Nom & Prénom</th>
+                                        <th>Rôle / Poste</th>
+                                        <th>Téléphone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: SERVICES MANAGEMENT -->
+                <div id="tab-services" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Gestion des Services & Offres</h2>
+                            <p>Modifiez et organisez l'éventail de vos prestations de conseil et d'aménagement.</p>
+                        </div>
+                        <button class="btn-action" onclick="openServiceModal()">➕ Nouveau Service</button>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Icône</th>
+                                        <th>Nom du Service</th>
+                                        <th>Résumé</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="services-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: MEDIA GALLERY (MÉDIATHÈQUE) -->
+                <div id="tab-media" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Médiathèque & Gestion d'Images</h2>
+                            <p>Téléversez, prévisualisez, copiez les liens ou gérez les visuels du site.</p>
+                        </div>
+                        <button class="btn-action" onclick="openImageModal()">➕ Ajouter une Image</button>
+                    </div>
+
+                    <!-- DROPZONE DE TÉLÉVERSEMENT -->
+                    <div id="upload-dropzone" class="upload-dropzone">
+                        <span class="icon">📁</span>
+                        <h3>Glissez-déposez vos images ici</h3>
+                        <p style="color: var(--admin-text-muted); font-size: 0.85rem; margin-top: 0.3rem;">
+                            ou cliquez pour sélectionner des fichiers depuis votre ordinateur (PNG, JPG, WEBP, GIF)
+                        </p>
+                        <input type="file" id="media-file-input" multiple accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- GRILLE DES IMAGES -->
+                    <div id="media-grid-container" class="media-grid">
+                        <!-- Dynamic Media Cards -->
+                    </div>
+                </div>
+
+                <!-- TAB 6: SITE INFO & CONTACT -->
+                <div id="tab-siteinfo" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Informations de la Société & Coordonnées</h2>
+                            <p>Mettez à jour les téléphones, emails et textes d'en-tête du site.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-card" style="padding: 1.5rem;">
+                        <form id="site-info-form" class="admin-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nom de l'entreprise</label>
+                                    <input type="text" id="site-company" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email de contact principal</label>
+                                    <input type="email" id="site-email" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Téléphone N° 1</label>
+                                    <input type="text" id="site-phone1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Téléphone N° 2</label>
+                                    <input type="text" id="site-phone2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Titre Principal de la page d'accueil (Hero)</label>
+                                <input type="text" id="site-hero-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sous-titre d'accroche (Hero Subtitle)</label>
+                                <textarea id="site-hero-subtitle" rows="2"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nom du Coordonnateur Général</label>
+                                    <input type="text" id="site-coordinator-name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message / Citation du Coordonnateur</label>
+                                    <textarea id="site-coordinator-message" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-action">💾 Enregistrer les Modifications</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAB 7: MESSAGES RECEPTEUR -->
+                <div id="tab-messages" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Boîte de Réception des Messages</h2>
+                            <p>Consultez les demandes de projets envoyées par les visiteurs depuis la page de contact.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Expéditeur</th>
+                                        <th>Téléphone</th>
+                                        <th>Sujet</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messages-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 8: BACKUP JSON -->
+                <div id="tab-backup" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Sauvegarde & Exportation des Données</h2>
+                            <p>Exportez ou importez vos projets et contenus sous forme de fichier de sauvegarde JSON.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-card" style="padding: 1.5rem; max-width: 600px;">
+                        <h3 style="margin-bottom: 0.5rem;">📥 Exporter la base de données</h3>
+                        <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                            Téléchargez un fichier <code>.json</code> complet contenant tous vos projets, membres de l'équipe et configurations.
+                        </p>
+                        <button class="btn-action" onclick="exportDataJSON()">💾 Exporter en JSON</button>
+
+                        <hr style="border: 0; border-top: 1px solid var(--admin-border); margin: 1.5rem 0;">
+
+                        <h3 style="margin-bottom: 0.5rem;">📤 Importer une sauvegarde JSON</h3>
+                        <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                            Restaurez vos données en chargeant un fichier JSON précédemment exporté.
+                        </p>
+                        <input type="file" id="json-import-file" accept=".json" style="margin-bottom: 1rem; color: #fff;">
+                        <br>
+                        <button class="btn-action btn-secondary" onclick="importDataJSON()">📂 Charger la sauvegarde</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ====================================================================
+         MODALS
+         ==================================================================== -->
+
+    <!-- IMAGE MODAL (MÉDIATHÈQUE) -->
+    <div id="image-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="image-modal-title">Ajouter une Image</h3>
+                <button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
+            </div>
+            <form id="image-form" class="admin-form">
+                <div class="modal-body">
+                    <input type="hidden" id="image-id">
+                    <div class="form-group">
+                        <label>Titre de l'image *</label>
+                        <input type="text" id="image-title" required placeholder="Ex: Plantation de Teck de Zè">
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <select id="image-category">
+                            <option value="Foresterie">Foresterie</option>
+                            <option value="Agriculture">Agriculture</option>
+                            <option value="Équipe">Équipe</option>
+                            <option value="Branding">Branding</option>
+                            <option value="Général">Général</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lien / URL ou DataURL de l'image *</label>
+                        <input type="text" id="image-url" required placeholder="assets/images/..." oninput="document.getElementById('image-modal-preview').src=this.value">
+                    </div>
+                    <div class="img-preview-box">
+                        <img id="image-modal-preview" src="assets/images/logo.png" alt="Aperçu">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action btn-secondary" onclick="closeImageModal()">Annuler</button>
+                    <button type="submit" class="btn-action">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEDIA PICKER MODAL (SÉLECTEUR D'IMAGE POUR FORMULAIRES) -->
+    <div id="media-picker-modal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Sélectionner une Image depuis la Médiathèque</h3>
+                <button class="modal-close-btn" onclick="closeMediaPicker()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="media-picker-grid" class="media-grid">
+                    <!-- Dynamic picker items -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-action btn-secondary" onclick="closeMediaPicker()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div id="project-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="project-modal-title">Nouveau Projet</h3>
+                <button class="modal-close-btn" onclick="closeProjectModal()">&times;</button>
+            </div>
+            <form id="project-form" class="admin-form">
+                <div class="modal-body">
+                    <input type="hidden" id="project-id">
+                    <div class="form-group">
+                        <label>Titre du projet *</label>
+                        <input type="text" id="project-title" required placeholder="Ex: Plantation de Teck de Zè">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Catégorie *</label>
+                            <select id="project-category" required>
+                                <option value="Foresterie">Foresterie</option>
+                                <option value="Agro-Pastoral">Agro-Pastoral</option>
+                                <option value="Agriculture">Agriculture</option>
+                                <option value="Élevage">Élevage</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Superficie (ex: 50 Ha)</label>
+                            <input type="text" id="project-surface" placeholder="50 Hectares">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Localisation (Ville / Région)</label>
+                        <input type="text" id="project-location" placeholder="Allada, Bénin">
+                    </div>
+                    <div class="form-group">
+                        <label>Image du projet</label>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="text" id="project-image" placeholder="assets/images/project-teck.jpg">
+                            <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('project-image')">🖼️ Médiathèque</button>
+                        </div>
+                        <div class="img-preview-box">
+                            <img id="project-img-preview" src="assets/images/logo.png" alt="Aperçu">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description du projet</label>
+                        <textarea id="project-description" rows="3" placeholder="Présentation détaillée du projet..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action btn-secondary" onclick="closeProjectModal()">Annuler</button>
+                    <button type="submit" class="btn-action">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TEAM MODAL -->
+    <div id="team-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="team-modal-title">Nouveau Membre</h3>
+                <button class="modal-close-btn" onclick="closeTeamModal()">&times;</button>
+            </div>
+            <form id="team-form" class="admin-form">
+                <div class="modal-body">
+                    <input type="hidden" id="team-id">
+                    <div class="form-group">
+                        <label>Nom & Prénom *</label>
+                        <input type="text" id="team-name" required placeholder="Ex: Mawougnon Aimé ADJAHO">
+                    </div>
+                    <div class="form-group">
+                        <label>Rôle / Poste *</label>
+                        <input type="text" id="team-role" required placeholder="Ex: Consultant Agronome">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="text" id="team-phone" placeholder="+229 01 ...">
+                        </div>
+                        <div class="form-group">
+                            <label>Photo du Membre</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="team-image" placeholder="assets/images/aime_adjaho.jpg">
+                                <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('team-image')">🖼️ Médiathèque</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Biographie & Compétences</label>
+                        <textarea id="team-bio" rows="3" placeholder="Description du parcours..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action btn-secondary" onclick="closeTeamModal()">Annuler</button>
+                    <button type="submit" class="btn-action">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SERVICE MODAL -->
+    <div id="service-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="service-modal-title">Nouveau Service</h3>
+                <button class="modal-close-btn" onclick="closeServiceModal()">&times;</button>
+            </div>
+            <form id="service-form" class="admin-form">
+                <div class="modal-body">
+                    <input type="hidden" id="service-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Titre du Service *</label>
+                            <input type="text" id="service-title" required placeholder="Ex: Securisation Foncier">
+                        </div>
+                        <div class="form-group">
+                            <label>Icône / Emoji</label>
+                            <input type="text" id="service-icon" placeholder="🌱">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Résumé court</label>
+                        <input type="text" id="service-summary" placeholder="Description succincte...">
+                    </div>
+                    <div class="form-group">
+                        <label>Description détaillée</label>
+                        <textarea id="service-description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action btn-secondary" onclick="closeServiceModal()">Annuler</button>
+                    <button type="submit" class="btn-action">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS SCRIPTS -->
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+
+</html>

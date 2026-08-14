@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - 3D-GROUPE SARL</title>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=2.4">
+    <link rel="stylesheet" href="../assets/css/backgrounds.css">
+    <style>
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: 2px solid var(--color-primary);
+            border-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-top">
+            <div class="container top-container">
+                <div class="contact-info">
+                    <div class="info-item phone-numbers">
+                        <span class="info-text phone-item">+229 01 62 09 87 50</span>
+                        <span class="info-text phone-item">+229 01 41 56 63 11</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-text email-item">aimeadjaho2012@gmail.com</span>
+                    </div>
+                </div>
+                <div class="header-extra">
+                    <div class="lang-selector">
+                        <a href="../contact.html" class="lang-link">FR</a> | <a href="contact.html"
+                            class="lang-link active">EN</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container header-container">
+                <!-- Branding Section -->
+                <div class="header-branding">
+                    <div class="logo-box">
+                        <a href="index.html">
+                            <img src="../assets/images/logo.png" alt="3D-GROUPE SARL" class="logo-img">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- Navigation -->
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Home</a></li>
+                        <li><a href="about.html" class="nav-link">About Us</a></li>
+                        <li><a href="services.html" class="nav-link">Our Services</a></li>
+                        <li><a href="projects.html" class="nav-link">Projects</a></li>
+                        <li><a href="team.html" class="nav-link">Team</a></li>
+                        <li><a href="contact.html" class="nav-link active">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Page Header -->
+        <div class="section contact-hero-bg text-center animate-fade-in">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p class="lead-text">Let's discuss your project and find the best solutions together.</p>
+            </div>
+        </div>
+
+        <section class="section container">
+            <div class="split-layout">
+                <div class="reveal-right">
+                    <h2>Our Coordinates</h2>
+                    <p>We are based in the Republic of Benin and operate throughout the sub-region.</p>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 class="text-primary">📞 Phone & WhatsApp</h4>
+                        <p>
+                            <a href="tel:+2290162098750" style="display: block; margin-bottom: 0.5rem;">+229 01 62 09 87
+                                50</a>
+                            <a href="tel:+2290141566311" style="display: block;">+229 01 41 56 63 11</a>
+                        </p>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 class="text-primary">📧 Official Email</h4>
+                        <p><a href="mailto:aimeadjaho2012@gmail.com">aimeadjaho2012@gmail.com</a></p>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <a href="https://wa.me/2290162098750" class="btn btn-success reveal-up delay-1"
+                            style="background-color:#25D366; color:white; border:none; padding: 1rem 2rem;">
+                            Chat on WhatsApp 💬
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-form reveal-up delay-1">
+                    <h3>Send us a message</h3>
+                    <form action="#" method="POST"
+                        onsubmit="event.preventDefault(); alert('Thank you! This form is a demo.');">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full name</label>
+                            <input type="text" id="name" class="form-input" required placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" class="form-input" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="type" class="form-label">Project Type</label>
+                            <select id="type" class="form-select">
+                                <option value="forestier">Forestry Project (Teak, etc.)</option>
+                                <option value="agricole">Agricultural Project</option>
+                                <option value="foncier">Land Securitization</option>
+                                <option value="autre">Other request</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea id="message" class="form-textarea" rows="5" required
+                                placeholder="Describe your project..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Maps Integration -->
+        <section class="section container reveal-up">
+            <h2 class="section-title text-center" style="margin-bottom: 2rem;">Our location via Maps</h2>
+            <div
+                style="border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-lg); height: 450px;">
+                <iframe src="https://www.google.com/maps?q=6.453595,2.2570067&hl=en&z=16&output=embed" width="100%"
+                    height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h3 class="footer-logo">3D-GROUPE SARL</h3>
+                <p>Expertise in sustainable agro-pasto-forestry projects.</p>
+                <div class="legal-info">
+                    <p><small>RCCM : RB/ABC/23B 7047</small></p>
+                    <p><small>IFU : 3202393787802</small></p>
+                    <p><small>NSIA BANQUE : 260043248014 (STE 3D GROUPE SARL)</small></p>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html">Our Company</a></li>
+                    <li><a href="services.html">Our Services</a></li>
+                    <li><a href="projects.html">Realizations</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contacts</h4>
+                <ul class="contact-list">
+                    <li>
+                        <strong>Phone :</strong><br>
+                        <a href="tel:+2290162098750">+229 01 62 09 87 50</a><br>
+                        <a href="tel:+2290141566311">+229 01 41 56 63 11</a>
+                    </li>
+                    <li>
+                        <strong>Email :</strong><br>
+                        <a href="mailto:aimeadjaho2012@gmail.com">aimeadjaho2012@gmail.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom text-center">
+            <p>&copy; 2026 3D-GROUPE SARL. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>
