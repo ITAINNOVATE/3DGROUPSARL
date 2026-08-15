@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "name": "3d-group-sarl",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/projects", "destination": "/projects.html" },
+    { "source": "/services", "destination": "/services.html" },
+    { "source": "/team", "destination": "/team.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/methodology", "destination": "/methodology.html" }
+  ]
+}
