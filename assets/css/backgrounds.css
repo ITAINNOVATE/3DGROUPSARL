@@ -7,7 +7,8 @@
 .services-hero-bg,
 .projects-hero-bg,
 .team-hero-bg,
-.contact-hero-bg {
+.contact-hero-bg,
+.methodology-hero-bg {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -29,31 +30,32 @@
 /* About Page Background */
 .about-hero-bg {
     background-image: linear-gradient(rgba(20, 58, 47, 0.7), rgba(20, 58, 47, 0.7)),
-        url('../images/project-teck.jpg');
+        url('../images/project-teck.webp');
 }
 
 /* Services Page Background */
 .services-hero-bg {
     background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
-        url('../images/header-services.png');
+        url('../images/header-services.webp');
 }
 
 /* Projects Page Background */
 .projects-hero-bg {
     background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
-        url('../images/header-projects.png');
+        url('../images/header-projects.webp');
 }
 
 /* Team Page Background */
 .team-hero-bg {
     background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
-        url('../images/header-team.png');
+        url('../images/header-team.webp');
 }
 
 /* Contact Page Background */
-.contact-hero-bg {
+.contact-hero-bg,
+.methodology-hero-bg {
     background-image: linear-gradient(rgba(20, 58, 47, 0.65), rgba(20, 58, 47, 0.65)),
-        url('../images/hero-bg.jpg');
+        url('../images/hero-bg.webp');
 }
 
 /* Text Enhancements */
@@ -61,7 +63,8 @@
 .services-hero-bg h1,
 .projects-hero-bg h1,
 .team-hero-bg h1,
-.contact-hero-bg h1 {
+.contact-hero-bg h1,
+.methodology-hero-bg h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
     color: white;
@@ -73,7 +76,8 @@
 .services-hero-bg .lead-text,
 .projects-hero-bg .lead-text,
 .team-hero-bg .lead-text,
-.contact-hero-bg .lead-text {
+.contact-hero-bg .lead-text,
+.methodology-hero-bg .lead-text {
     color: white;
     font-size: 1.25rem;
     max-width: 800px;
@@ -89,7 +93,8 @@
     .services-hero-bg,
     .projects-hero-bg,
     .team-hero-bg,
-    .contact-hero-bg {
+    .contact-hero-bg,
+.methodology-hero-bg {
         background-attachment: scroll;
         padding: 4rem 0;
     }

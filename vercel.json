@@ -11,5 +11,19 @@
     { "source": "/contact", "destination": "/contact.html" },
     { "source": "/about", "destination": "/about.html" },
     { "source": "/methodology", "destination": "/methodology.html" }
+  ],
+  "headers": [
+    {
+      "source": "/assets/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/assets/(css|js)/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
   ]
 }

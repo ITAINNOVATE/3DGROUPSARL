@@ -7,9 +7,12 @@
     <title>À Propos - 3D-GROUPE SARL</title>
     <meta name="description"
         content="Découvrez 3D-GROUPE SARL, cabinet de conseil et d'appui agricole au Bénin. Notre mission, notre vision et nos valeurs.">
-    <link rel="stylesheet" href="assets/css/variables.css">
-    <link rel="stylesheet" href="assets/css/style.css?v=2.4">
-    <link rel="stylesheet" href="assets/css/backgrounds.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="assets/css/variables.css?v=3.1">
+    <link rel="stylesheet" href="assets/css/style.css?v=3.1">
+    <link rel="stylesheet" href="assets/css/backgrounds.css?v=3.1">
     <style>
         /* Redundant styles removed - now in style.css */
     </style>
@@ -22,11 +25,11 @@
             <div class="container top-container">
                 <div class="contact-info">
                     <div class="info-item phone-numbers">
-                        <span class="info-text phone-item">+229 01 62 09 87 50</span>
-                        <span class="info-text phone-item">+229 01 41 56 63 11</span>
+                        <a href="tel:+2290162098750" class="info-text phone-item">+229 01 62 09 87 50</a>
+                        <a href="tel:+2290141566311" class="info-text phone-item">+229 01 41 56 63 11</a>
                     </div>
                     <div class="info-item">
-                        <span class="info-text email-item">aimeadjaho2012@gmail.com</span>
+                        <a href="mailto:aimeadjaho2012@gmail.com" class="info-text email-item">aimeadjaho2012@gmail.com</a>
                     </div>
                 </div>
                 <div class="header-extra">
@@ -43,13 +46,13 @@
                 <div class="header-branding">
                     <div class="logo-box">
                         <a href="index.html">
-                            <img src="assets/images/logo.png" alt="3D-GROUPE SARL" class="logo-img">
+                            <img src="assets/images/logo.webp" alt="3D-GROUPE SARL" class="logo-img">
                         </a>
                     </div>
                 </div>
 
                 <!-- Mobile Toggle -->
-                <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+                <button class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -61,6 +64,7 @@
                         <li><a href="index.html" class="nav-link">Accueil</a></li>
                         <li><a href="about.html" class="nav-link active">À Propos</a></li>
                         <li><a href="services.html" class="nav-link">Nos Services</a></li>
+                        <li><a href="methodology.html" class="nav-link">Méthodologie</a></li>
                         <li><a href="projects.html" class="nav-link">Projets</a></li>
                         <li><a href="team.html" class="nav-link">Équipe</a></li>
                         <li><a href="contact.html" class="nav-link">Contact</a></li>
@@ -181,13 +185,6 @@
                         <div style="text-align: center;">
                             <h4
                                 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
-                                Informations Bancaires</h4>
-                            <p style="font-size: 0.85rem; text-align: center;">NSIA BANQUE<br>N° DE COMPTE :
-                                260043248014</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <h4
-                                style="color: var(--color-accent); margin-bottom: 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">
                                 Siège</h4>
                             <p style="font-size: 0.85rem; text-align: center;">Ouèdo, Abomey-Calavi,<br>République du
                                 Bénin</p>
@@ -206,7 +203,6 @@
                 <div class="legal-info">
                     <p><small>RCCM : RB/ABC/23B 7047</small></p>
                     <p><small>IFU : 3202393787802</small></p>
-                    <p><small>NSIA BANQUE : 260043248014 (STE 3D GROUPE SARL)</small></p>
                 </div>
             </div>
             <div class="footer-col">
@@ -214,6 +210,7 @@
                 <ul class="footer-links">
                     <li><a href="about.html">Notre Entreprise</a></li>
                     <li><a href="services.html">Nos Services</a></li>
+                    <li><a href="methodology.html">Méthodologie</a></li>
                     <li><a href="projects.html">Réalisations</a></li>
                     <li><a href="contact.html">Contactez-nous</a></li>
                 </ul>
@@ -234,11 +231,12 @@
             </div>
         </div>
         <div class="footer-bottom text-center">
-            <p>&copy; 2026 3D-GROUPE SARL. Tous droits réservés.</p>
+            <p>&copy; <a href="admin.html" class="footer-year">2026</a> 3D-GROUPE SARL. Tous droits réservés.</p>
         </div>
     </footer>
 
-    <script src="assets/js/main.js"></script>
+    <a href="https://wa.me/2290162098750?text=Bonjour%203D-GROUPE%20SARL%2C%20je%20souhaite%20des%20informations%20sur%20un%20projet." class="whatsapp-float" target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp" title="Discuter sur WhatsApp"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor"><path d="M16.04 3C8.86 3 3.02 8.83 3.02 16c0 2.3.6 4.54 1.75 6.52L3 29l6.65-1.74A13 13 0 0 0 16.04 29C23.2 29 29 23.17 29 16S23.2 3 16.04 3Zm0 23.8c-1.98 0-3.92-.53-5.61-1.53l-.4-.24-3.95 1.03 1.05-3.84-.26-.4A10.76 10.76 0 0 1 5.24 16c0-5.95 4.85-10.8 10.8-10.8 5.94 0 10.77 4.85 10.77 10.8 0 5.96-4.83 10.8-10.77 10.8Zm5.92-8.08c-.32-.16-1.92-.95-2.22-1.06-.3-.11-.51-.16-.73.16-.21.32-.84 1.06-1.03 1.27-.19.22-.38.24-.7.08-.32-.16-1.37-.5-2.6-1.6-.96-.86-1.61-1.92-1.8-2.24-.19-.32-.02-.5.14-.66.15-.14.32-.38.48-.57.16-.19.21-.32.32-.54.11-.21.05-.4-.03-.56-.08-.16-.73-1.76-1-2.4-.26-.63-.53-.55-.73-.56h-.62c-.21 0-.56.08-.86.4-.3.32-1.13 1.1-1.13 2.7 0 1.58 1.16 3.12 1.32 3.33.16.22 2.28 3.48 5.52 4.88.77.33 1.37.53 1.84.68.77.25 1.48.21 2.03.13.62-.09 1.92-.78 2.19-1.54.27-.76.27-1.4.19-1.54-.08-.13-.29-.21-.61-.37Z"/></svg></a>
+    <script src="assets/js/main.js?v=3.1" defer></script>
 </body>
 
 </html>

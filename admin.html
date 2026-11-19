@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Admin CSS -->
-    <link rel="stylesheet" href="assets/css/admin.css?v=1.1">
+    <link rel="stylesheet" href="assets/css/admin.css?v=3.2">
 </head>
 
 <body class="admin-body">
@@ -22,7 +22,7 @@
          ==================================================================== -->
     <div id="login-view" class="admin-login-wrapper">
         <div class="login-card">
-            <img src="assets/images/logo.png" alt="3D-GROUPE SARL" class="login-logo">
+            <img src="assets/images/logo.webp" alt="3D-GROUPE SARL" class="login-logo">
             <div class="login-header">
                 <h2>Espace Admin</h2>
                 <p>Connexion à la plateforme de gestion 3D-GROUPE SARL</p>
@@ -33,21 +33,16 @@
                 
                 <div class="form-group">
                     <label for="login-username">Identifiant / Email</label>
-                    <input type="text" id="login-username" placeholder="admin" required value="admin">
+                    <input type="text" id="login-username" placeholder="Identifiant" required autocomplete="username">
                 </div>
                 
                 <div class="form-group">
                     <label for="login-password">Mot de passe</label>
-                    <input type="password" id="login-password" placeholder="••••••••" required value="3dgroup2026">
+                    <input type="password" id="login-password" placeholder="Mot de passe" required autocomplete="current-password">
                 </div>
                 
                 <button type="submit" class="btn-login">Se Connecter</button>
             </form>
-
-            <div class="login-credentials-hint">
-                💡 <strong>Accès démonstration :</strong><br>
-                Utilisateur : <code>admin</code> | Mot de passe : <code>3dgroup2026</code>
-            </div>
         </div>
     </div>
 
@@ -59,7 +54,7 @@
         <!-- SIDEBAR NAVIGATION -->
         <aside id="admin-sidebar" class="admin-sidebar">
             <div class="sidebar-header">
-                <img src="assets/images/logo.png" alt="3D-GROUPE SARL" class="sidebar-logo">
+                <img src="assets/images/logo.webp" alt="3D-GROUPE SARL" class="sidebar-logo">
                 <div class="sidebar-title">
                     3D-GROUPE
                     <span>Panneau Administration</span>
@@ -69,6 +64,9 @@
             <nav class="sidebar-nav">
                 <button class="nav-item-btn active" data-tab="dashboard">
                     <span class="icon">📊</span> Tableau de bord
+                </button>
+                <button class="nav-item-btn" data-tab="pages">
+                    <span class="icon">📄</span> Gestion des Pages
                 </button>
                 <button class="nav-item-btn" data-tab="projects">
                     <span class="icon">🌲</span> Gestion des Projets
@@ -87,6 +85,7 @@
                 </button>
                 <button class="nav-item-btn" data-tab="messages">
                     <span class="icon">📩</span> Boîte de Réception
+                    <span id="unread-messages-badge" class="nav-badge" style="display:none;">0</span>
                 </button>
                 <button class="nav-item-btn" data-tab="backup">
                     <span class="icon">💾</span> Sauvegarde / JSON
@@ -127,44 +126,44 @@
                 <div id="tab-dashboard" class="tab-pane active">
                     <div class="dashboard-header">
                         <h1>Bienvenue dans votre Espace Admin 👋</h1>
-                        <p>Gérez en toute simplicité le contenu et les images affichés sur la plateforme 3D-GROUPE SARL.</p>
+                        <p>Gérez en toute simplicité les pages, projets, services et messages de 3D-GROUPE SARL.</p>
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card" style="cursor: pointer;" onclick="switchToTab('pages')">
+                            <div class="stat-info">
+                                <span>Pages du Site</span>
+                                <h3 id="stat-pages-count">14</h3>
+                            </div>
+                            <div class="stat-icon">📄</div>
+                        </div>
+                        <div class="stat-card" style="cursor: pointer;" onclick="switchToTab('projects')">
                             <div class="stat-info">
                                 <span>Projets Actifs</span>
                                 <h3 id="stat-projects-count">0</h3>
                             </div>
                             <div class="stat-icon">🌲</div>
                         </div>
-                        <div class="stat-card info">
+                        <div class="stat-card info" style="cursor: pointer;" onclick="switchToTab('messages')">
                             <div class="stat-info">
-                                <span>Membres Équipe</span>
-                                <h3 id="stat-team-count">0</h3>
+                                <span>Messages Reçus</span>
+                                <h3 id="stat-messages-count">0</h3>
                             </div>
-                            <div class="stat-icon">👥</div>
+                            <div class="stat-icon">📩</div>
                         </div>
-                        <div class="stat-card accent">
+                        <div class="stat-card accent" style="cursor: pointer;" onclick="switchToTab('services')">
                             <div class="stat-info">
                                 <span>Services Offerts</span>
                                 <h3 id="stat-services-count">0</h3>
                             </div>
                             <div class="stat-icon">🌱</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" style="cursor: pointer;" onclick="switchToTab('media')">
                             <div class="stat-info">
                                 <span>Images Médiathèque</span>
                                 <h3 id="stat-images-count">0</h3>
                             </div>
                             <div class="stat-icon">🖼️</div>
-                        </div>
-                        <div class="stat-card info">
-                            <div class="stat-info">
-                                <span>Messages Reçus</span>
-                                <h3 id="stat-messages-count">0</h3>
-                            </div>
-                            <div class="stat-icon">📩</div>
                         </div>
                     </div>
 
@@ -172,20 +171,58 @@
                         <h3 style="margin-bottom: 0.75rem;">🚀 Actions Rapides</h3>
                         <p style="color: var(--admin-text-muted); margin-bottom: 1.25rem;">Accédez directement aux sections principales pour effectuer vos mises à jour :</p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn-action" onclick="openProjectModal()">➕ Ajouter un Projet</button>
-                            <button class="btn-action btn-secondary" onclick="openTeamModal()">👥 Ajouter un Membre</button>
+                            <button class="btn-action" onclick="switchToTab('pages')">📄 Gérer les Pages</button>
+                            <button class="btn-action btn-secondary" onclick="openProjectModal()">➕ Ajouter un Projet</button>
+                            <button class="btn-action btn-secondary" onclick="switchToTab('messages')">📩 Voir les Messages</button>
                             <button class="btn-action btn-secondary" onclick="openImageModal()">🖼️ Téléverser une Image</button>
-                            <button class="btn-action btn-secondary" onclick="openServiceModal()">🌱 Ajouter un Service</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: PROJECTS MANAGEMENT -->
+                <!-- TAB 2: PAGES MANAGEMENT (NOUVEAU) -->
+                <div id="tab-pages" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Gestion de Toutes les Pages du Site</h2>
+                            <p>Consultez, modifiez les textes, titres, descriptions SEO et sections de toutes les pages.</p>
+                        </div>
+                        <button class="btn-action" onclick="openPageModal()">➕ Ajouter une Page</button>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <button class="btn-action btn-secondary btn-page-filter active" onclick="filterPagesByLang('ALL', this)">Toutes les Pages (<span id="count-pages-all">14</span>)</button>
+                        <button class="btn-action btn-secondary btn-page-filter" onclick="filterPagesByLang('FR', this)">🇫🇷 Pages Françaises (<span id="count-pages-fr">7</span>)</button>
+                        <button class="btn-action btn-secondary btn-page-filter" onclick="filterPagesByLang('EN', this)">🇬🇧 English Pages (<span id="count-pages-en">7</span>)</button>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Langue</th>
+                                        <th>Fichier / URL</th>
+                                        <th>Titre de la Page</th>
+                                        <th>Titre Hero (H1)</th>
+                                        <th>Statut</th>
+                                        <th>Dernière Modif</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pages-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: PROJECTS MANAGEMENT -->
                 <div id="tab-projects" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
                             <h2>Gestion des Projets Agro-Pasto-Forestiers</h2>
-                            <p>Ajoutez, modifiez ou supprimez les projets affichés dans la galerie publique.</p>
+                            <p>Ajoutez, modifiez ou organisez les projets affichés dans la galerie publique.</p>
                         </div>
                         <button class="btn-action" onclick="openProjectModal()">➕ Nouveau Projet</button>
                     </div>
@@ -211,7 +248,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: TEAM MANAGEMENT -->
+                <!-- TAB 4: TEAM MANAGEMENT -->
                 <div id="tab-team" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
@@ -241,7 +278,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: SERVICES MANAGEMENT -->
+                <!-- TAB 5: SERVICES MANAGEMENT -->
                 <div id="tab-services" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
@@ -270,7 +307,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: MEDIA GALLERY (MÉDIATHÈQUE) -->
+                <!-- TAB 6: MEDIA GALLERY -->
                 <div id="tab-media" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
@@ -280,12 +317,12 @@
                         <button class="btn-action" onclick="openImageModal()">➕ Ajouter une Image</button>
                     </div>
 
-                    <!-- DROPZONE DE TÉLÉVERSEMENT -->
+                    <!-- DROPZONE -->
                     <div id="upload-dropzone" class="upload-dropzone">
                         <span class="icon">📁</span>
                         <h3>Glissez-déposez vos images ici</h3>
                         <p style="color: var(--admin-text-muted); font-size: 0.85rem; margin-top: 0.3rem;">
-                            ou cliquez pour sélectionner des fichiers depuis votre ordinateur (PNG, JPG, WEBP, GIF)
+                            ou cliquez pour sélectionner des fichiers depuis votre ordinateur (WEBP, PNG, JPG)
                         </p>
                         <input type="file" id="media-file-input" multiple accept="image/*" style="display: none;">
                     </div>
@@ -296,7 +333,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 6: SITE INFO & CONTACT -->
+                <!-- TAB 7: SITE INFO & CONTACT -->
                 <div id="tab-siteinfo" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
@@ -351,7 +388,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 7: MESSAGES RECEPTEUR -->
+                <!-- TAB 8: MESSAGES RECEPTEUR -->
                 <div id="tab-messages" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
@@ -367,7 +404,8 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Expéditeur</th>
-                                        <th>Téléphone</th>
+                                        <th>Email</th>
+                                        <th>Téléphone / WhatsApp</th>
                                         <th>Sujet</th>
                                         <th>Statut</th>
                                         <th>Actions</th>
@@ -381,19 +419,19 @@
                     </div>
                 </div>
 
-                <!-- TAB 8: BACKUP JSON -->
+                <!-- TAB 9: BACKUP JSON -->
                 <div id="tab-backup" class="tab-pane">
                     <div class="content-section-header">
                         <div class="section-title">
                             <h2>Sauvegarde & Exportation des Données</h2>
-                            <p>Exportez ou importez vos projets et contenus sous forme de fichier de sauvegarde JSON.</p>
+                            <p>Exportez ou importez vos projets, pages et contenus sous forme de fichier de sauvegarde JSON.</p>
                         </div>
                     </div>
 
                     <div class="table-card" style="padding: 1.5rem; max-width: 600px;">
                         <h3 style="margin-bottom: 0.5rem;">📥 Exporter la base de données</h3>
                         <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-                            Téléchargez un fichier <code>.json</code> complet contenant tous vos projets, membres de l'équipe et configurations.
+                            Téléchargez un fichier <code>.json</code> complet contenant toutes vos pages, projets et configurations.
                         </p>
                         <button class="btn-action" onclick="exportDataJSON()">💾 Exporter en JSON</button>
 
@@ -401,11 +439,10 @@
 
                         <h3 style="margin-bottom: 0.5rem;">📤 Importer une sauvegarde JSON</h3>
                         <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-                            Restaurez vos données en chargeant un fichier JSON précédemment exporté.
+                            Restaurez vos données à partir d'un fichier <code>.json</code> préalablement sauvegardé.
                         </p>
-                        <input type="file" id="json-import-file" accept=".json" style="margin-bottom: 1rem; color: #fff;">
-                        <br>
-                        <button class="btn-action btn-secondary" onclick="importDataJSON()">📂 Charger la sauvegarde</button>
+                        <input type="file" id="import-json-file" accept=".json" style="margin-bottom: 1rem; display: block;">
+                        <button class="btn-action btn-secondary" onclick="importDataJSON()">Restaurer les données</button>
                     </div>
                 </div>
 
@@ -414,63 +451,88 @@
     </div>
 
     <!-- ====================================================================
-         MODALS
+         MODALS DE GESTION
          ==================================================================== -->
 
-    <!-- IMAGE MODAL (MÉDIATHÈQUE) -->
-    <div id="image-modal" class="modal-overlay">
-        <div class="modal-container">
+    <!-- PAGE EDIT MODAL (NOUVEAU) -->
+    <div id="page-modal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 700px;">
             <div class="modal-header">
-                <h3 id="image-modal-title">Ajouter une Image</h3>
-                <button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
+                <h3 id="page-modal-title">Modifier la Page</h3>
+                <button class="modal-close-btn" onclick="closePageModal()">&times;</button>
             </div>
-            <form id="image-form" class="admin-form">
+            <form id="page-form" class="admin-form">
                 <div class="modal-body">
-                    <input type="hidden" id="image-id">
-                    <div class="form-group">
-                        <label>Titre de l'image *</label>
-                        <input type="text" id="image-title" required placeholder="Ex: Plantation de Teck de Zè">
+                    <input type="hidden" id="page-id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nom de la Page (Menu / Admin) *</label>
+                            <input type="text" id="page-title" required placeholder="Ex: Accueil">
+                        </div>
+                        <div class="form-group">
+                            <label>Langue *</label>
+                            <select id="page-lang" class="form-select">
+                                <option value="FR">🇫🇷 Français</option>
+                                <option value="EN">🇬🇧 English</option>
+                            </select>
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label>Catégorie</label>
-                        <select id="image-category">
-                            <option value="Foresterie">Foresterie</option>
-                            <option value="Agriculture">Agriculture</option>
-                            <option value="Équipe">Équipe</option>
-                            <option value="Branding">Branding</option>
-                            <option value="Général">Général</option>
+                        <label>Fichier HTML correspondant *</label>
+                        <input type="text" id="page-filename" required placeholder="ex: index.html ou en/index.html">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Titre de la fenêtre / Balise &lt;title&gt; (SEO)</label>
+                        <input type="text" id="page-seotitle" placeholder="Titre affiché sur Google et l'onglet du navigateur">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description SEO (&lt;meta name="description"&gt;)</label>
+                        <textarea id="page-seodesc" rows="2" placeholder="Description de la page pour les moteurs de recherche..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Titre Principal de la Bannière (Hero H1)</label>
+                        <input type="text" id="page-herotitle" placeholder="Titre principal visible sur la page">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sous-titre d'accroche (Hero Subtitle)</label>
+                        <textarea id="page-herosubtitle" rows="2" placeholder="Phrase d'introduction sous le titre principal..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Statut de la page</label>
+                        <select id="page-status" class="form-select">
+                            <option value="En ligne">🟢 En ligne (Publiée)</option>
+                            <option value="En maintenance">🟡 En maintenance</option>
+                            <option value="Brouillon">⚪ Brouillon</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Lien / URL ou DataURL de l'image *</label>
-                        <input type="text" id="image-url" required placeholder="assets/images/..." oninput="document.getElementById('image-modal-preview').src=this.value">
-                    </div>
-                    <div class="img-preview-box">
-                        <img id="image-modal-preview" src="assets/images/logo.png" alt="Aperçu">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-action btn-secondary" onclick="closeImageModal()">Annuler</button>
-                    <button type="submit" class="btn-action">Enregistrer</button>
+                    <button type="button" class="btn-action btn-secondary" onclick="closePageModal()">Annuler</button>
+                    <button type="submit" class="btn-action">💾 Enregistrer les Modifications</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MEDIA PICKER MODAL (SÉLECTEUR D'IMAGE POUR FORMULAIRES) -->
-    <div id="media-picker-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 800px;">
+    <!-- MESSAGE VIEW MODAL (NOUVEAU) -->
+    <div id="message-view-modal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 600px;">
             <div class="modal-header">
-                <h3>Sélectionner une Image depuis la Médiathèque</h3>
-                <button class="modal-close-btn" onclick="closeMediaPicker()">&times;</button>
+                <h3>Message de Contact Reçu</h3>
+                <button class="modal-close-btn" onclick="closeMessageViewModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <div id="media-picker-grid" class="media-grid">
-                    <!-- Dynamic picker items -->
-                </div>
+            <div class="modal-body" id="message-view-body">
+                <!-- Dynamic Content -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-action btn-secondary" onclick="closeMediaPicker()">Fermer</button>
+            <div class="modal-footer" id="message-view-actions">
+                <!-- Dynamic Actions -->
             </div>
         </div>
     </div>
@@ -487,16 +549,16 @@
                     <input type="hidden" id="project-id">
                     <div class="form-group">
                         <label>Titre du projet *</label>
-                        <input type="text" id="project-title" required placeholder="Ex: Plantation de Teck de Zè">
+                        <input type="text" id="project-title" required placeholder="Ex: Plantation de Teck">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Catégorie *</label>
-                            <select id="project-category" required>
+                            <label>Catégorie</label>
+                            <select id="project-category" class="form-select">
                                 <option value="Foresterie">Foresterie</option>
                                 <option value="Agro-Pastoral">Agro-Pastoral</option>
-                                <option value="Agriculture">Agriculture</option>
-                                <option value="Élevage">Élevage</option>
+                                <option value="Foncier">Foncier</option>
+                                <option value="Pépinière">Pépinière</option>
                                 <option value="Autre">Autre</option>
                             </select>
                         </div>
@@ -512,11 +574,11 @@
                     <div class="form-group">
                         <label>Image du projet</label>
                         <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <input type="text" id="project-image" placeholder="assets/images/project-teck.jpg">
+                            <input type="text" id="project-image" placeholder="assets/images/project-teck.webp">
                             <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('project-image')">🖼️ Médiathèque</button>
                         </div>
                         <div class="img-preview-box">
-                            <img id="project-img-preview" src="assets/images/logo.png" alt="Aperçu">
+                            <img loading="lazy" decoding="async" id="project-img-preview" src="assets/images/logo.webp" alt="Aperçu">
                         </div>
                     </div>
                     <div class="form-group">
@@ -558,7 +620,7 @@
                         <div class="form-group">
                             <label>Photo du Membre</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="text" id="team-image" placeholder="assets/images/aime_adjaho.jpg">
+                                <input type="text" id="team-image" placeholder="assets/images/aime_adjaho.webp">
                                 <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('team-image')">🖼️ Médiathèque</button>
                             </div>
                         </div>
@@ -589,7 +651,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Titre du Service *</label>
-                            <input type="text" id="service-title" required placeholder="Ex: Securisation Foncier">
+                            <input type="text" id="service-title" required placeholder="Ex: Sécurisation Foncière">
                         </div>
                         <div class="form-group">
                             <label>Icône / Emoji</label>
@@ -613,9 +675,46 @@
         </div>
     </div>
 
+    <!-- MEDIA PICKER MODAL -->
+    <div id="media-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="image-modal-title">Ajouter une Image</h3>
+                <button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
+            </div>
+            <form id="image-form" class="admin-form">
+                <div class="modal-body">
+                    <input type="hidden" id="image-id">
+                    <div class="form-group">
+                        <label>Titre de l'image *</label>
+                        <input type="text" id="image-title" required placeholder="Ex: Vue aérienne plantation">
+                    </div>
+                    <div class="form-group">
+                        <label>URL ou Chemin de l'image *</label>
+                        <input type="text" id="image-url" required placeholder="assets/images/project-teck.webp">
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <select id="image-category" class="form-select">
+                            <option value="Foresterie">Foresterie</option>
+                            <option value="Agro-Pastoral">Agro-Pastoral</option>
+                            <option value="Équipe">Équipe</option>
+                            <option value="Branding">Branding</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action btn-secondary" onclick="closeImageModal()">Annuler</button>
+                    <button type="submit" class="btn-action">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JS SCRIPTS -->
-    <script src="assets/js/store.js"></script>
-    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/store.js?v=3.2" defer></script>
+    <script src="assets/js/admin.js?v=3.2" defer></script>
 </body>
 
 </html>
