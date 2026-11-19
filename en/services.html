@@ -203,7 +203,7 @@
         </div>
 
         <!-- Methodology Section -->
-        <div id="section-methodologie" class="tab-content">
+        <div id="section-methodologie" class="tab-content active">
             <div class="container">
                 <div class="text-center animate-fade-in" style="margin-bottom: 3rem;">
                     <h2 class="premium-title" style="font-size: 2rem;">Methodology</h2>
@@ -320,24 +320,49 @@
     <script src="../assets/js/main.js?v=3.1" defer></script>
     <script>
         function showTab(tabName) {
-            // Hide all tab contents
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
-
-            // Remove active class from all buttons
+            // Mettre a jour le bouton actif
             const tabButtons = document.querySelectorAll('.segment-btn');
-            tabButtons.forEach(btn => {
-                btn.classList.remove('active');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tab-' + tabName);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // S'assurer que les sections sont affichees
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(c => {
+                c.classList.add('active');
+                c.style.display = 'block';
             });
 
-            // Show selected tab content
-            document.getElementById('section-' + tabName).classList.add('active');
-
-            // Add active class to clicked button
-            document.getElementById('tab-' + tabName).classList.add('active');
+            // Descendre fluidement vers la section demandee avec compensation header
+            const target = document.getElementById('section-' + tabName);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
+
+        // Mise a jour automatique du bouton actif lors du defilement
+        window.addEventListener('scroll', () => {
+            const domaines = document.getElementById('section-domaines');
+            const methodo = document.getElementById('section-methodologie');
+            const tabDomaines = document.getElementById('tab-domaines');
+            const tabMethodo = document.getElementById('tab-methodologie');
+
+            if (!domaines || !methodo || !tabDomaines || !tabMethodo) return;
+
+            const scrollPos = window.scrollY + 180;
+            const methodoTop = methodo.offsetTop;
+
+            if (scrollPos >= methodoTop) {
+                tabMethodo.classList.add('active');
+                tabDomaines.classList.remove('active');
+            } else {
+                tabDomaines.classList.add('active');
+                tabMethodo.classList.remove('active');
+            }
+        }, { passive: true });
     </script>
 </body>
 

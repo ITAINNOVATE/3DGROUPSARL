@@ -1818,3 +1818,14 @@ small {
     max-width: 680px;
     margin: 0 auto 2rem auto;
 }
+
+/* Smooth Anchor scroll margin for Services sections */
+#section-domaines,
+#section-methodologie {
+    scroll-margin-top: 120px;
+    transition: opacity 0.3s ease;
+}
+
+.tab-content {
+    display: block;
+}
