@@ -222,9 +222,32 @@
                     <div class="content-section-header">
                         <div class="section-title">
                             <h2>Gestion des Projets Agro-Pasto-Forestiers</h2>
-                            <p>Ajoutez, modifiez ou organisez les projets affichés dans la galerie publique.</p>
+                            <p>Retrouvez ci-dessous toutes les photos, catégories et noms de la page Projets. Modifiez l'image depuis votre ordinateur ou changez le titre et la catégorie en un clic.</p>
                         </div>
                         <button class="btn-action" onclick="openProjectModal()">➕ Nouveau Projet</button>
+                    </div>
+
+                    <!-- Search and Category Filters -->
+                    <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #ffffff; padding: 1rem; border-radius: var(--radius-md, 12px); border: 1px solid var(--admin-border);">
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; flex: 1;">
+                            <input type="text" id="project-search-input" placeholder="🔍 Rechercher par nom ou catégorie..." style="padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.9rem; min-width: 260px; flex: 1;" oninput="filterProjectsList()">
+                            <select id="project-category-filter" class="form-select" style="width: auto; padding: 0.6rem 1rem; font-size: 0.9rem;" onchange="filterProjectsList()">
+                                <option value="ALL">Toutes les catégories</option>
+                                <option value="Foresterie">Foresterie</option>
+                                <option value="Pépinière">Pépinière</option>
+                                <option value="Terrain">Terrain</option>
+                                <option value="Agriculture">Agriculture</option>
+                                <option value="Production">Production</option>
+                                <option value="Exploitation">Exploitation</option>
+                                <option value="Études">Études</option>
+                                <option value="Partenariat">Partenariat</option>
+                                <option value="Formation">Formation</option>
+                                <option value="Expertise">Expertise</option>
+                            </select>
+                        </div>
+                        <div style="font-size: 0.95rem; color: var(--admin-text-muted); font-weight: 500;">
+                            <span id="filtered-projects-count" style="color: var(--admin-primary); font-size: 1.15rem; font-weight: 700;">34</span> projet(s)
+                        </div>
                     </div>
 
                     <div class="table-card">
@@ -572,13 +595,20 @@
                         <input type="text" id="project-location" placeholder="Allada, Bénin">
                     </div>
                     <div class="form-group">
-                        <label>Image du projet</label>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <input type="text" id="project-image" placeholder="assets/images/project-teck.webp">
-                            <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('project-image')">🖼️ Médiathèque</button>
+                        <label>Image de la réalisation *</label>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                            <input type="text" id="project-image" placeholder="assets/images/project-teck.webp" style="flex: 1; min-width: 200px;">
+                            <button type="button" class="btn-action" style="white-space: nowrap; font-size: 0.85rem; background: #0284c7; border-color: #0284c7;" onclick="document.getElementById('project-file-input').click()">
+                                📁 Choisir depuis l'ordinateur
+                            </button>
+                            <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.85rem;" onclick="openMediaPicker('project-image')">
+                                🖼️ Médiathèque
+                            </button>
+                            <input type="file" id="project-file-input" accept="image/*" style="display: none;">
                         </div>
-                        <div class="img-preview-box">
-                            <img loading="lazy" decoding="async" id="project-img-preview" src="assets/images/logo.webp" alt="Aperçu">
+                        <div class="img-preview-box" style="margin-top: 0.75rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.75rem;">
+                            <img loading="lazy" decoding="async" id="project-img-preview" src="assets/images/logo.webp" alt="Aperçu" style="max-height: 180px; max-width: 100%; border-radius: 6px; object-fit: contain; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.4rem;">Aperçu de la photo sélectionnée</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -715,6 +745,7 @@
     <!-- JS SCRIPTS -->
     <script src="assets/js/store.js?v=3.2" defer></script>
     <script src="assets/js/admin.js?v=3.2" defer></script>
+<input type="file" id="quick-image-file-input" accept="image/*" style="display: none;">
 </body>
 
 </html>

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let currentPagesFilter = 'ALL';
+let activeQuickUploadProjectId = null;
 
 function initAdmin() {
     const store = window.cmsStore;
@@ -87,6 +88,7 @@ function initAdmin() {
         renderMessages();
         setupDropzone();
         setupForms();
+        setupProjectImageUploads();
     }
 
     // ----------------------------------------------------------------------
@@ -94,9 +96,6 @@ function initAdmin() {
     // ----------------------------------------------------------------------
     function setupNavigation() {
         const navBtns = document.querySelectorAll('.nav-item-btn');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        const topbarTitle = document.getElementById('topbar-title');
-
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetTab = btn.getAttribute('data-tab');
@@ -287,38 +286,104 @@ window.closePageModal = function() {
 };
 
 // ----------------------------------------------------------------------
-// PROJECTS MANAGEMENT
+// PROJECTS MANAGEMENT (34 VRAIS PROJETS AVEC IMAGES, CATÉGORIES & NOMS)
 // ----------------------------------------------------------------------
+function getCategoryBadgeColor(cat) {
+    const map = {
+        'Foresterie': { bg: '#ecfdf5', text: '#065f46', border: '#a7f3d0' },
+        'Pépinière': { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+        'Terrain': { bg: '#fef3c7', text: '#92400e', border: '#fde68a' },
+        'Agriculture': { bg: '#fffbeb', text: '#b45309', border: '#fcd34d' },
+        'Production': { bg: '#e0f2fe', text: '#0369a1', border: '#bae6fd' },
+        'Exploitation': { bg: '#fae8ff', text: '#86198f', border: '#f5d0fe' },
+        'Études': { bg: '#ede9fe', text: '#5b21b6', border: '#ddd6fe' },
+        'Partenariat': { bg: '#ffe4e6', text: '#9f1239', border: '#fecdd3' },
+        'Formation': { bg: '#f1f5f9', text: '#334155', border: '#cbd5e1' },
+        'Expertise': { bg: '#e2e8f0', text: '#1e293b', border: '#94a3b8' }
+    };
+    return map[cat] || { bg: '#f8fafc', text: '#475569', border: '#e2e8f0' };
+}
+
 function renderProjects() {
     const store = window.cmsStore;
     if (!store) return;
     const tbody = document.getElementById('projects-table-body');
     if (!tbody) return;
 
-    const projects = store.getProjects() || [];
+    let projects = store.getProjects() || [];
+    
+    // Filtres
+    const searchInput = document.getElementById('project-search-input');
+    const catFilter = document.getElementById('project-category-filter');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const selectedCat = catFilter ? catFilter.value : 'ALL';
+
+    if (query) {
+        projects = projects.filter(p => 
+            (p.title && p.title.toLowerCase().includes(query)) ||
+            (p.category && p.category.toLowerCase().includes(query)) ||
+            (p.location && p.location.toLowerCase().includes(query))
+        );
+    }
+
+    if (selectedCat !== 'ALL') {
+        projects = projects.filter(p => p.category === selectedCat);
+    }
+
+    const countBadge = document.getElementById('filtered-projects-count');
+    if (countBadge) countBadge.textContent = projects.length;
+
     if (projects.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--admin-text-muted);">Aucun projet enregistré.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--admin-text-muted);">
+            Aucun projet ne correspond à votre recherche.
+        </td></tr>`;
         return;
     }
 
-    tbody.innerHTML = projects.map(p => `
+    tbody.innerHTML = projects.map(p => {
+        const catStyle = getCategoryBadgeColor(p.category || 'Foresterie');
+        return `
         <tr>
-            <td>
-                <img loading="lazy" decoding="async" src="${p.image || 'assets/images/logo.webp'}" alt="${escapeHtml(p.title)}" class="table-img-thumb" onerror="this.src='assets/images/logo.webp'">
+            <td style="width: 80px;">
+                <div style="position: relative; display: inline-block;">
+                    <img loading="lazy" decoding="async" src="${p.image || 'assets/images/logo.webp'}" alt="${escapeHtml(p.title)}" class="table-img-thumb" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--admin-border); cursor: pointer;" onclick="openProjectModal('${p.id}')" onerror="this.src='assets/images/logo.webp'">
+                </div>
             </td>
-            <td style="font-weight: 600;">${escapeHtml(p.title)}</td>
-            <td><span class="badge" style="background:#f1f5f9; color:#334155;">${escapeHtml(p.category || 'Foresterie')}</span></td>
-            <td>${escapeHtml(p.location || '-')}</td>
-            <td>${escapeHtml(p.surface || '-')}</td>
+            <td style="font-weight: 600; color: var(--admin-text-main); font-size: 0.95rem;">
+                ${escapeHtml(p.title)}
+            </td>
             <td>
-                <div style="display: flex; gap: 0.4rem;">
-                    <button class="btn-table-action" onclick="openProjectModal('${p.id}')" title="Modifier">✏️</button>
-                    <button class="btn-table-action delete" onclick="deleteProject('${p.id}')" title="Supprimer">🗑️</button>
+                <span class="badge" style="background: ${catStyle.bg}; color: ${catStyle.text}; border: 1px solid ${catStyle.border}; font-weight: 600; font-size: 0.8rem;">
+                    ${escapeHtml(p.category || 'Foresterie')}
+                </span>
+            </td>
+            <td style="color: var(--admin-text-muted); font-size: 0.85rem;">
+                ${escapeHtml(p.location || 'Bénin')}
+            </td>
+            <td style="color: var(--admin-text-muted); font-size: 0.85rem;">
+                ${escapeHtml(p.surface || '-')}
+            </td>
+            <td>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                    <button class="btn-action btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;" onclick="openProjectModal('${p.id}')" title="Modifier le nom, la catégorie et les informations">
+                        ✏️ Modifier
+                    </button>
+                    <button class="btn-action" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; background: #0284c7; border-color: #0284c7;" onclick="triggerQuickImageUpload('${p.id}')" title="Choisir une nouvelle photo depuis votre ordinateur">
+                        📁 Photo
+                    </button>
+                    <button class="btn-table-action delete" onclick="deleteProject('${p.id}')" title="Supprimer ce projet">
+                        🗑️
+                    </button>
                 </div>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
+
+window.filterProjectsList = function() {
+    renderProjects();
+};
 
 window.openProjectModal = function(id = null) {
     const store = window.cmsStore;
@@ -334,7 +399,7 @@ window.openProjectModal = function(id = null) {
     if (id) {
         const p = store.getProjectById(id);
         if (p) {
-            title.textContent = "Modifier le Projet";
+            title.textContent = `Modifier : ${p.title}`;
             document.getElementById('project-id').value = p.id;
             document.getElementById('project-title').value = p.title || '';
             document.getElementById('project-category').value = p.category || 'Foresterie';
@@ -358,13 +423,82 @@ window.closeProjectModal = function() {
 };
 
 window.deleteProject = function(id) {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce projet ?")) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce projet de la galerie ?")) {
         window.cmsStore.deleteProject(id);
         renderProjects();
         renderOverview();
         showToast("Projet supprimé", "info");
     }
 };
+
+/**
+ * Raccourci pour changer l'image d'un projet directement depuis le tableau via l'explorateur de l'ordinateur
+ */
+window.triggerQuickImageUpload = function(projectId) {
+    activeQuickUploadProjectId = projectId;
+    const input = document.getElementById('quick-image-file-input');
+    if (input) {
+        input.value = '';
+        input.click();
+    }
+};
+
+/**
+ * Configure les écouteurs de sélection de fichiers images depuis l'ordinateur
+ */
+function setupProjectImageUploads() {
+    // 1. Upload dans le modal projet
+    const modalFileInput = document.getElementById('project-file-input');
+    const preview = document.getElementById('project-img-preview');
+    const imageInput = document.getElementById('project-image');
+
+    if (modalFileInput) {
+        modalFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    if (imageInput) imageInput.value = dataUrl;
+                    if (preview) preview.src = dataUrl;
+                    showToast(`Photo "${file.name}" chargée depuis votre ordinateur !`, "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Prévisualisation en direct si l'utilisateur modifie l'URL manuellement
+    if (imageInput && preview) {
+        imageInput.addEventListener('input', (e) => {
+            preview.src = e.target.value.trim() || 'assets/images/logo.webp';
+        });
+    }
+
+    // 2. Upload rapide directement depuis la ligne du tableau
+    const quickInput = document.getElementById('quick-image-file-input');
+    if (quickInput) {
+        quickInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0] && activeQuickUploadProjectId) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    const project = window.cmsStore.getProjectById(activeQuickUploadProjectId);
+                    if (project) {
+                        project.image = dataUrl;
+                        window.cmsStore.saveProject(project);
+                        renderProjects();
+                        renderOverview();
+                        showToast(`Photo du projet "${project.title}" mise à jour avec succès !`, "success");
+                    }
+                    activeQuickUploadProjectId = null;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+}
 
 // ----------------------------------------------------------------------
 // TEAM MANAGEMENT
@@ -591,7 +725,7 @@ function setupDropzone() {
 }
 
 // ----------------------------------------------------------------------
-// SITE INFO (COORDINATEUR, CONTACTS)
+// SITE INFO
 // ----------------------------------------------------------------------
 function renderSiteInfo() {
     const store = window.cmsStore;
@@ -615,7 +749,7 @@ function renderSiteInfo() {
 }
 
 // ----------------------------------------------------------------------
-// MESSAGES INBOX (BOÎTE DE RÉCEPTION REÇUE DU SITE)
+// MESSAGES INBOX
 // ----------------------------------------------------------------------
 function renderMessages() {
     const store = window.cmsStore;
@@ -779,7 +913,7 @@ function setupForms() {
             closeProjectModal();
             renderProjects();
             renderOverview();
-            showToast("Projet enregistré !", "success");
+            showToast("Projet et photo enregistrés !", "success");
         });
     }
 

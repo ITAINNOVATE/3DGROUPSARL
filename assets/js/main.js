@@ -97,6 +97,36 @@ function applyPageCustomizations(store) {
             heroSub.setAttribute('data-customized', 'true');
         }
     }
+
+    // C. Live Projects Grid Sync (Reflète les ajouts et modifications de l'admin)
+    const projectsGrid = document.querySelector('.projects-grid');
+    if (projectsGrid && store) {
+        const projects = store.getProjects();
+        if (projects && projects.length > 0) {
+            const isEnPage = window.location.pathname.includes('/en/');
+            const defaultLogo = isEnPage ? '../assets/images/logo.webp' : 'assets/images/logo.webp';
+
+            projectsGrid.innerHTML = projects.map(p => {
+                let imgSrc = p.image || defaultLogo;
+                if (isEnPage && !imgSrc.startsWith('http') && !imgSrc.startsWith('data:') && !imgSrc.startsWith('../')) {
+                    imgSrc = '../' + imgSrc;
+                }
+                return `
+                <article class="project-card animate-fade-in">
+                    <div class="project-image">
+                        <img loading="lazy" decoding="async" src="${imgSrc}" alt="${escapeHtml(p.title)}" onerror="this.src='${defaultLogo}'">
+                    </div>
+                    <div class="project-content">
+                        <span class="project-tag">${escapeHtml(p.category || 'Foresterie')}</span>
+                        <h3>${escapeHtml(p.title)}</h3>
+                        ${p.surface ? `<p class="project-surface" style="font-weight:600; color:var(--color-primary, #16a34a); margin:0.2rem 0;">📐 Superficie: ${escapeHtml(p.surface)}</p>` : ''}
+                        ${p.location ? `<p class="project-location" style="font-size:0.85rem; color:#64748b; margin-bottom:0.5rem;">📍 ${escapeHtml(p.location)}</p>` : ''}
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+    }
 }
 
 /**
