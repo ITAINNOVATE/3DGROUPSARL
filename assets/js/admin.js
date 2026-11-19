@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let currentPagesFilter = 'ALL';
 let activeQuickUploadProjectId = null;
+let activeQuickUploadPageId = null;
+let activeQuickUploadTeamId = null;
 
 function initAdmin() {
     const store = window.cmsStore;
@@ -93,6 +95,7 @@ function initAdmin() {
         setupDropzone();
         setupForms();
         setupProjectImageUploads();
+        setupAllImageUploadHandlers();
     }
 
     // ----------------------------------------------------------------------
@@ -209,8 +212,13 @@ function renderPages() {
             ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">🇫🇷 FR</span>`
             : `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🇬🇧 EN</span>`;
         
+        const heroImg = p.heroImage || 'assets/images/hero-drone.webp';
+
         return `
             <tr>
+                <td style="width: 70px;">
+                    <img loading="lazy" decoding="async" src="${heroImg}" alt="${escapeHtml(p.title)}" class="table-img-thumb" style="width: 58px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); cursor: pointer;" onclick="openPageModal('${p.id}')" onerror="this.src='assets/images/logo.webp'">
+                </td>
                 <td>${langBadge}</td>
                 <td>
                     <code style="background: rgba(0,0,0,0.04); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.85rem;">
@@ -220,7 +228,7 @@ function renderPages() {
                 <td style="font-weight: 600; color: var(--admin-text-main);">
                     ${escapeHtml(p.title)}
                 </td>
-                <td style="max-width: 250px; font-size: 0.85rem; color: var(--admin-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                <td style="max-width: 220px; font-size: 0.85rem; color: var(--admin-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                     ${escapeHtml(p.heroTitle || '-')}
                 </td>
                 <td>
@@ -228,16 +236,16 @@ function renderPages() {
                         ${escapeHtml(p.status || 'En ligne')}
                     </span>
                 </td>
-                <td style="font-size: 0.8rem; color: var(--admin-text-muted);">
-                    ${p.lastModified || '2026-11-19'}
-                </td>
                 <td>
-                    <div style="display: flex; gap: 0.4rem;">
+                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
                         <a href="${escapeHtml(p.filename)}" target="_blank" class="btn-table-action" title="Voir la page publique" style="text-decoration:none;">
                             👁️
                         </a>
-                        <button class="btn-table-action" onclick="openPageModal('${p.id}')" title="Modifier le contenu">
-                            ✏️
+                        <button class="btn-action btn-secondary" style="padding: 0.3rem 0.55rem; font-size: 0.78rem;" onclick="openPageModal('${p.id}')" title="Modifier les textes et informations">
+                            ✏️ Éditer
+                        </button>
+                        <button class="btn-action" style="padding: 0.3rem 0.55rem; font-size: 0.78rem; background: #0284c7; border-color: #0284c7;" onclick="triggerQuickPageImageUpload('${p.id}')" title="Changer l'image Hero depuis l'ordinateur">
+                            📁 Photo
                         </button>
                     </div>
                 </td>
@@ -274,6 +282,18 @@ window.openPageModal = function(id = null) {
             document.getElementById('page-seodesc').value = page.seoDescription || '';
             document.getElementById('page-herotitle').value = page.heroTitle || '';
             document.getElementById('page-herosubtitle').value = page.heroSubtitle || '';
+            if (document.getElementById('page-heroimage')) {
+                document.getElementById('page-heroimage').value = page.heroImage || '';
+            }
+            if (document.getElementById('page-hero-img-preview')) {
+                document.getElementById('page-hero-img-preview').src = page.heroImage || 'assets/images/hero-drone.webp';
+            }
+            if (document.getElementById('page-maincontent')) {
+                document.getElementById('page-maincontent').value = page.mainContent || '';
+            }
+            if (document.getElementById('page-extracontent')) {
+                document.getElementById('page-extracontent').value = page.extraContent || '';
+            }
             document.getElementById('page-status').value = page.status || 'En ligne';
         }
     } else {
@@ -527,16 +547,23 @@ function renderTeam() {
     const team = store.getTeam() || [];
     tbody.innerHTML = team.map(m => `
         <tr>
-            <td>
-                <img loading="lazy" decoding="async" src="${m.image || 'assets/images/logo.webp'}" alt="${escapeHtml(m.name)}" class="table-img-thumb" onerror="this.src='assets/images/logo.webp'">
+            <td style="width: 70px;">
+                <img loading="lazy" decoding="async" src="${m.image || 'assets/images/aime_adjaho.webp'}" alt="${escapeHtml(m.name)}" class="table-img-thumb" style="width: 52px; height: 52px; object-fit: cover; border-radius: 8px; border: 1px solid var(--admin-border); cursor: pointer;" onclick="openTeamModal('${m.id}')" onerror="this.src='assets/images/logo.webp'">
             </td>
-            <td style="font-weight: 600;">${escapeHtml(m.name)}</td>
+            <td style="font-weight: 600; color: var(--admin-text-main); font-size: 0.95rem;">${escapeHtml(m.name)}</td>
             <td>${escapeHtml(m.role)}</td>
             <td>${escapeHtml(m.phone || '-')}</td>
             <td>
-                <div style="display: flex; gap: 0.4rem;">
-                    <button class="btn-table-action" onclick="openTeamModal('${m.id}')" title="Modifier">✏️</button>
-                    <button class="btn-table-action delete" onclick="deleteTeamMember('${m.id}')" title="Supprimer">🗑️</button>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                    <button class="btn-action btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;" onclick="openTeamModal('${m.id}')" title="Modifier">
+                        ✏️ Modifier
+                    </button>
+                    <button class="btn-action" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; background: #0284c7; border-color: #0284c7;" onclick="triggerQuickTeamImageUpload('${m.id}')" title="Changer la photo depuis l'ordinateur">
+                        📁 Photo
+                    </button>
+                    <button class="btn-table-action delete" onclick="deleteTeamMember('${m.id}')" title="Supprimer">
+                        🗑️
+                    </button>
                 </div>
             </td>
         </tr>
@@ -560,6 +587,9 @@ window.openTeamModal = function(id = null) {
             document.getElementById('team-role').value = m.role || '';
             document.getElementById('team-phone').value = m.phone || '';
             document.getElementById('team-image').value = m.image || '';
+            if (document.getElementById('team-img-preview')) {
+                document.getElementById('team-img-preview').src = m.image || 'assets/images/aime_adjaho.webp';
+            }
             document.getElementById('team-bio').value = m.bio || '';
         }
     } else {
@@ -760,7 +790,15 @@ function renderSiteInfo() {
     setVal('site-hero-title', info.heroTitle);
     setVal('site-hero-subtitle', info.heroSubtitle);
     setVal('site-coordinator-name', info.coordinatorName);
+    setVal('site-coordinator-title', info.coordinatorTitle || '');
     setVal('site-coordinator-message', info.coordinatorMessage);
+    setVal('site-coordinator-image', info.coordinatorImage || 'assets/images/coordinator.webp');
+    setVal('site-core-business', info.coreBusiness || '');
+    setVal('site-address', info.address || 'Ouèdo, Abomey-Calavi, République du Bénin');
+    const coordPreview = document.getElementById('coord-img-preview');
+    if (coordPreview) {
+        coordPreview.src = info.coordinatorImage || 'assets/images/coordinator.webp';
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -890,6 +928,10 @@ function setupForms() {
         pageForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('page-id').value;
+            const heroImgEl = document.getElementById('page-heroimage');
+            const mainContentEl = document.getElementById('page-maincontent');
+            const extraContentEl = document.getElementById('page-extracontent');
+
             const pageData = {
                 id: id || undefined,
                 title: document.getElementById('page-title').value.trim(),
@@ -899,6 +941,9 @@ function setupForms() {
                 seoDescription: document.getElementById('page-seodesc').value.trim(),
                 heroTitle: document.getElementById('page-herotitle').value.trim(),
                 heroSubtitle: document.getElementById('page-herosubtitle').value.trim(),
+                heroImage: heroImgEl ? heroImgEl.value.trim() : undefined,
+                mainContent: mainContentEl ? mainContentEl.value.trim() : undefined,
+                extraContent: extraContentEl ? extraContentEl.value.trim() : undefined,
                 status: document.getElementById('page-status').value
             };
             store.savePage(pageData);
@@ -998,6 +1043,11 @@ function setupForms() {
     if (siteInfoForm) {
         siteInfoForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            const coordImgEl = document.getElementById('site-coordinator-image');
+            const coordTitleEl = document.getElementById('site-coordinator-title');
+            const coreBizEl = document.getElementById('site-core-business');
+            const addrEl = document.getElementById('site-address');
+
             store.updateSiteInfo({
                 companyName: document.getElementById('site-company').value.trim(),
                 email: document.getElementById('site-email').value.trim(),
@@ -1006,7 +1056,11 @@ function setupForms() {
                 heroTitle: document.getElementById('site-hero-title').value.trim(),
                 heroSubtitle: document.getElementById('site-hero-subtitle').value.trim(),
                 coordinatorName: document.getElementById('site-coordinator-name').value.trim(),
-                coordinatorMessage: document.getElementById('site-coordinator-message').value.trim()
+                coordinatorTitle: coordTitleEl ? coordTitleEl.value.trim() : '',
+                coordinatorImage: coordImgEl ? coordImgEl.value.trim() : 'assets/images/coordinator.webp',
+                coordinatorMessage: document.getElementById('site-coordinator-message').value.trim(),
+                coreBusiness: coreBizEl ? coreBizEl.value.trim() : '',
+                address: addrEl ? addrEl.value.trim() : ''
             });
             showToast("Coordonnées de l'entreprise mises à jour !", "success");
         });
@@ -1090,4 +1144,133 @@ function escapeHtml(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+/**
+ * Triggers d'upload rapide depuis l'ordinateur
+ */
+window.triggerQuickPageImageUpload = function(pageId) {
+    activeQuickUploadPageId = pageId;
+    const input = document.getElementById('quick-page-file-input');
+    if (input) {
+        input.value = '';
+        input.click();
+    }
+};
+
+window.triggerQuickTeamImageUpload = function(teamId) {
+    activeQuickUploadTeamId = teamId;
+    const input = document.getElementById('quick-team-file-input');
+    if (input) {
+        input.value = '';
+        input.click();
+    }
+};
+
+function setupAllImageUploadHandlers() {
+    // 1. Page Hero Image Upload dans le modal
+    const pageFileInput = document.getElementById('page-hero-file-input');
+    const pageHeroImgInput = document.getElementById('page-heroimage');
+    const pageHeroPreview = document.getElementById('page-hero-img-preview');
+    if (pageFileInput) {
+        pageFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    if (pageHeroImgInput) pageHeroImgInput.value = dataUrl;
+                    if (pageHeroPreview) pageHeroPreview.src = dataUrl;
+                    showToast(`Bannière "${file.name}" sélectionnée !`, "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 2. Page Hero Image Upload rapide depuis la table
+    const quickPageInput = document.getElementById('quick-page-file-input');
+    if (quickPageInput) {
+        quickPageInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0] && activeQuickUploadPageId) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    const page = window.cmsStore.getPageById(activeQuickUploadPageId);
+                    if (page) {
+                        page.heroImage = dataUrl;
+                        window.cmsStore.savePage(page);
+                        renderPages();
+                        showToast(`Image de bannière pour "${page.title}" mise à jour !`, "success");
+                    }
+                    activeQuickUploadPageId = null;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 3. Team Member Image Upload dans le modal
+    const teamFileInput = document.getElementById('team-file-input');
+    const teamImgInput = document.getElementById('team-image');
+    const teamPreview = document.getElementById('team-img-preview');
+    if (teamFileInput) {
+        teamFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    if (teamImgInput) teamImgInput.value = dataUrl;
+                    if (teamPreview) teamPreview.src = dataUrl;
+                    showToast(`Photo "${file.name}" chargée !`, "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 4. Team Member Image Upload rapide depuis la table
+    const quickTeamInput = document.getElementById('quick-team-file-input');
+    if (quickTeamInput) {
+        quickTeamInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0] && activeQuickUploadTeamId) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    const member = window.cmsStore.getTeamById(activeQuickUploadTeamId);
+                    if (member) {
+                        member.image = dataUrl;
+                        window.cmsStore.saveTeamMember(member);
+                        renderTeam();
+                        showToast(`Photo de "${member.name}" mise à jour !`, "success");
+                    }
+                    activeQuickUploadTeamId = null;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 5. Coordinator Photo Upload dans Site Info
+    const coordFileInput = document.getElementById('coord-file-input');
+    const coordImgInput = document.getElementById('site-coordinator-image');
+    const coordPreview = document.getElementById('coord-img-preview');
+    if (coordFileInput) {
+        coordFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    if (coordImgInput) coordImgInput.value = dataUrl;
+                    if (coordPreview) coordPreview.src = dataUrl;
+                    showToast(`Photo du Coordonnateur "${file.name}" chargée !`, "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 }

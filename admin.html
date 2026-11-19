@@ -200,12 +200,12 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
+                                        <th>Bannière</th>
                                         <th>Langue</th>
                                         <th>Fichier / URL</th>
                                         <th>Titre de la Page</th>
                                         <th>Titre Hero (H1)</th>
                                         <th>Statut</th>
-                                        <th>Dernière Modif</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -404,9 +404,34 @@
                                     <input type="text" id="site-coordinator-name">
                                 </div>
                                 <div class="form-group">
-                                    <label>Message / Citation du Coordonnateur</label>
-                                    <textarea id="site-coordinator-message" rows="3"></textarea>
+                                    <label>Titre officiel du Coordonnateur</label>
+                                    <input type="text" id="site-coordinator-title" placeholder="Coordonnateur Général de 3D-GROUPE SARL">
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Photo du Coordonnateur Général</label>
+                                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                    <input type="text" id="site-coordinator-image" placeholder="assets/images/coordinator.webp" style="flex: 1; min-width: 200px;">
+                                    <button type="button" class="btn-action" style="white-space: nowrap; font-size: 0.85rem; background: #0284c7; border-color: #0284c7;" onclick="document.getElementById('coord-file-input').click()">
+                                        📁 Choisir la photo depuis l'ordinateur
+                                    </button>
+                                    <input type="file" id="coord-file-input" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="img-preview-box" style="margin-top: 0.5rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem;">
+                                    <img loading="lazy" decoding="async" id="coord-img-preview" src="assets/images/coordinator.webp" alt="Aperçu Coordonnateur" style="max-height: 140px; max-width: 100%; border-radius: 6px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Message / Mot de Bienvenue du Coordonnateur (Page d'accueil)</label>
+                                <textarea id="site-coordinator-message" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Texte Cœur de Métier (Page d'accueil)</label>
+                                <textarea id="site-core-business" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse Physique du Siège</label>
+                                <input type="text" id="site-address" placeholder="Ouèdo, Abomey-Calavi, République du Bénin">
                             </div>
 
                             <button type="submit" class="btn-action">💾 Enregistrer les Modifications</button>
@@ -531,6 +556,33 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Image de Bannière / Hero (depuis votre ordinateur ou URL) *</label>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                            <input type="text" id="page-heroimage" placeholder="assets/images/hero-drone.webp" style="flex: 1; min-width: 200px;">
+                            <button type="button" class="btn-action" style="white-space: nowrap; font-size: 0.85rem; background: #0284c7; border-color: #0284c7;" onclick="document.getElementById('page-hero-file-input').click()">
+                                📁 Choisir depuis l'ordinateur
+                            </button>
+                            <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.85rem;" onclick="openMediaPicker('page-heroimage')">
+                                🖼️ Médiathèque
+                            </button>
+                            <input type="file" id="page-hero-file-input" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="img-preview-box" style="margin-top: 0.5rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem;">
+                            <img loading="lazy" decoding="async" id="page-hero-img-preview" src="assets/images/hero-drone.webp" alt="Aperçu Bannière" style="max-height: 120px; max-width: 100%; border-radius: 6px; object-fit: cover;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Texte / Contenu Principal de la page</label>
+                        <textarea id="page-maincontent" rows="4" placeholder="Texte de présentation, paragraphe d'introduction ou description détaillée..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contenu Complémentaire (Vision, Mission, Engagements, etc.)</label>
+                        <textarea id="page-extracontent" rows="3" placeholder="Texte additionnel, vision stratégique ou notes d'accompagnement..."></textarea>
+                    </div>
+
+                    <div class="form-group">
                         <label>Statut de la page</label>
                         <select id="page-status" class="form-select">
                             <option value="En ligne">🟢 En ligne (Publiée)</option>
@@ -651,10 +703,19 @@
                             <input type="text" id="team-phone" placeholder="+229 01 ...">
                         </div>
                         <div class="form-group">
-                            <label>Photo du Membre</label>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <input type="text" id="team-image" placeholder="assets/images/aime_adjaho.webp">
-                                <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.8rem;" onclick="openMediaPicker('team-image')">🖼️ Médiathèque</button>
+                            <label>Photo du Membre *</label>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                <input type="text" id="team-image" placeholder="assets/images/aime_adjaho.webp" style="flex: 1; min-width: 200px;">
+                                <button type="button" class="btn-action" style="white-space: nowrap; font-size: 0.85rem; background: #0284c7; border-color: #0284c7;" onclick="document.getElementById('team-file-input').click()">
+                                    📁 Choisir depuis l'ordinateur
+                                </button>
+                                <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.85rem;" onclick="openMediaPicker('team-image')">
+                                    🖼️ Médiathèque
+                                </button>
+                                <input type="file" id="team-file-input" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="img-preview-box" style="margin-top: 0.5rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem;">
+                                <img loading="lazy" decoding="async" id="team-img-preview" src="assets/images/aime_adjaho.webp" alt="Aperçu Photo" style="max-height: 140px; max-width: 100%; border-radius: 6px; object-fit: contain;">
                             </div>
                         </div>
                     </div>
@@ -749,6 +810,8 @@
     <script src="assets/js/store.js?v=3.5" defer></script>
     <script src="assets/js/admin.js?v=3.5" defer></script>
 <input type="file" id="quick-image-file-input" accept="image/*" style="display: none;">
+<input type="file" id="quick-page-file-input" accept="image/*" style="display: none;">
+<input type="file" id="quick-team-file-input" accept="image/*" style="display: none;">
 </body>
 
 </html>

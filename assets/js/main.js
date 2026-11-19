@@ -1,55 +1,18 @@
 /**
- * 3D-GROUPE SARL - PUBLIC INTERACTION & DYNAMIC CMS RENDERER
- */
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Mobile Menu Toggle
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-
-    if (mobileMenuToggle && mainNav) {
-        mobileMenuToggle.addEventListener('click', () => {
-            const isExpanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
-            mainNav.classList.toggle('active');
-            mobileMenuToggle.classList.toggle('active');
-            mobileMenuToggle.setAttribute('aria-expanded', !isExpanded);
-        });
-    }
-
-    // 2. Header Scroll Effect
-    const header = document.querySelector('.site-header');
-    if (header) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        }, { passive: true });
-    }
-
-    // 3. Dynamic CMS Integration
-    const store = window.cmsStore;
-    if (store) {
-        applyPageCustomizations(store);
-        
-        // Listen for live updates from admin
-        window.addEventListener('cms_data_updated', () => {
-            applyPageCustomizations(store);
-        });
-    }
-
-    // 4. Contact Form Listener (Envoi direct vers Espace Admin)
-    setupContactForm(store);
-});
-
-/**
  * Applique les modifications de contenu personnalisées depuis l'Espace Admin
  */
 function applyPageCustomizations(store) {
     if (!store) return;
 
-    // A. Site Info (Téléphones & Emails dans l'en-tête et le pied de page)
+    const isEn = window.location.pathname.includes('/en/');
+    const prefixAsset = (path) => {
+        if (!path) return '';
+        if (path.startsWith('data:') || path.startsWith('http') || path.startsWith('//')) return path;
+        if (isEn && !path.startsWith('../')) return '../' + path;
+        return path;
+    };
+
+    // A. Site Info (Téléphones, Emails & Adresses)
     const siteInfo = store.getSiteInfo();
     if (siteInfo) {
         document.querySelectorAll('.phone-item').forEach((el, index) => {
@@ -66,11 +29,16 @@ function applyPageCustomizations(store) {
                 if (el.tagName === 'A') el.href = `mailto:${siteInfo.email}`;
             }
         });
+
+        if (siteInfo.companyName) {
+            document.querySelectorAll('.footer-logo, .brand-name').forEach(el => {
+                el.textContent = siteInfo.companyName;
+            });
+        }
     }
 
     // B. Page Metadata & Hero Customization
     const currentPath = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
-    const isEn = window.location.pathname.includes('/en/');
     const filename = isEn ? `en/${currentPath}` : currentPath;
     
     const pageData = store.getPageByFilename ? store.getPageByFilename(filename) : null;
@@ -86,31 +54,123 @@ function applyPageCustomizations(store) {
 
         // Hero Titles
         const heroH1 = document.querySelector('.hero-section h1, .services-hero h1, .about-hero-bg h1, .projects-hero-bg h1, .team-hero-bg h1, .contact-hero-bg h1, .methodology-hero-bg h1');
-        if (heroH1 && pageData.heroTitle && !heroH1.getAttribute('data-customized')) {
-            heroH1.textContent = pageData.heroTitle;
-            heroH1.setAttribute('data-customized', 'true');
+        if (heroH1 && pageData.heroTitle) {
+            heroH1.innerHTML = pageData.heroTitle;
         }
 
-        const heroSub = document.querySelector('.hero-subtitle, .lead-text');
-        if (heroSub && pageData.heroSubtitle && !heroSub.getAttribute('data-customized')) {
-            heroSub.textContent = pageData.heroSubtitle;
-            heroSub.setAttribute('data-customized', 'true');
+        const heroSub = document.querySelector('.hero-subtitle, .lead-text, .premium-lead');
+        if (heroSub && pageData.heroSubtitle) {
+            heroSub.innerHTML = pageData.heroSubtitle;
+        }
+
+        // Hero Image de Bannière
+        if (pageData.heroImage) {
+            const heroEl = document.querySelector('.hero-section, .services-hero, .about-hero-bg, .projects-hero-bg, .team-hero-bg, .contact-hero-bg, .methodology-hero-bg');
+            if (heroEl) {
+                const bgImg = prefixAsset(pageData.heroImage);
+                heroEl.style.backgroundImage = `linear-gradient(rgba(10, 25, 20, 0.72), rgba(10, 25, 20, 0.72)), url('${bgImg}')`;
+                heroEl.style.backgroundSize = 'cover';
+                heroEl.style.backgroundPosition = 'center';
+            }
         }
     }
 
-    // C. Live Projects Grid Sync (Reflète les ajouts et modifications de l'admin)
+    // C. Section Coordonnateur Général (Accueil index.html / en/index.html)
+    if (currentPath === 'index.html' || currentPath === '') {
+        if (siteInfo) {
+            // Photo du Coordonnateur
+            if (siteInfo.coordinatorImage) {
+                const coordImg = document.querySelector('.coordinator-photo, .coordinator-img-wrapper img');
+                if (coordImg) {
+                    coordImg.src = prefixAsset(siteInfo.coordinatorImage);
+                }
+            }
+
+            // Nom et Titre
+            if (siteInfo.coordinatorName) {
+                const nameEl = document.querySelector('.coordinator-name-card h3');
+                if (nameEl) nameEl.textContent = siteInfo.coordinatorName;
+            }
+            if (siteInfo.coordinatorTitle) {
+                const titleEl = document.querySelector('.coordinator-name-card p');
+                if (titleEl) titleEl.textContent = siteInfo.coordinatorTitle;
+            }
+
+            // Message du Coordonnateur
+            if (siteInfo.coordinatorMessage) {
+                const welcomeP = document.querySelector('.coordinator-text p.welcome-text');
+                if (welcomeP) {
+                    const nextP = welcomeP.nextElementSibling;
+                    if (nextP && nextP.tagName === 'P') {
+                        nextP.textContent = siteInfo.coordinatorMessage;
+                    }
+                }
+            }
+        }
+    }
+
+    // D. Section À Propos (about.html / en/about.html)
+    if (currentPath === 'about.html') {
+        if (pageData && pageData.mainContent) {
+            const descEl = document.querySelector('.premium-description');
+            if (descEl) {
+                descEl.innerHTML = `<p>${pageData.mainContent.split("\n\n").join("</p><p>").split("\n").join("<br>")}</p>`;
+            }
+        }
+    }
+
+    // E. Section Équipe Dirigeante (team.html / en/team.html)
+    if (currentPath === 'team.html') {
+        const teamMembers = store.getTeam ? store.getTeam() : [];
+        if (teamMembers && teamMembers.length > 0) {
+            const leader = teamMembers[0];
+            const portraitImg = document.querySelector('.team-photo-container img');
+            if (portraitImg && leader.image) {
+                portraitImg.src = prefixAsset(leader.image);
+            }
+
+            const leaderName = document.querySelector('.text-content h2.text-primary');
+            if (leaderName && leader.name) {
+                leaderName.textContent = leader.name;
+            }
+
+            const leaderRole = document.querySelector('.text-content h4.text-accent');
+            if (leaderRole && leader.role) {
+                leaderRole.textContent = leader.role;
+            }
+
+            const leaderBio = document.querySelector('.text-content > p');
+            if (leaderBio && leader.bio) {
+                leaderBio.textContent = leader.bio;
+            }
+        }
+    }
+
+    // F. Services Cards (services.html / en/services.html)
+    if (currentPath === 'services.html') {
+        const services = store.getServices ? store.getServices() : [];
+        if (services && services.length > 0) {
+            const serviceCards = document.querySelectorAll('.service-card, .service-detail-block, .service-row');
+            services.forEach((s, idx) => {
+                if (serviceCards[idx]) {
+                    const titleEl = serviceCards[idx].querySelector('h3, h2');
+                    if (titleEl && s.title) titleEl.textContent = s.title;
+                    const descEl = serviceCards[idx].querySelector('p');
+                    if (descEl && (s.summary || s.description)) descEl.textContent = s.summary || s.description;
+                }
+            });
+        }
+    }
+
+    // G. Live Projects Grid Sync (Reflète les 34 projets et leurs modifications)
     const projectsGrid = document.querySelector('.projects-grid');
     if (projectsGrid && store) {
         const projects = store.getProjects();
         if (projects && projects.length > 0) {
-            const isEnPage = window.location.pathname.includes('/en/');
-            const defaultLogo = isEnPage ? '../assets/images/logo.webp' : 'assets/images/logo.webp';
+            const defaultLogo = isEn ? '../assets/images/logo.webp' : 'assets/images/logo.webp';
 
             projectsGrid.innerHTML = projects.map(p => {
-                let imgSrc = p.image || defaultLogo;
-                if (isEnPage && !imgSrc.startsWith('http') && !imgSrc.startsWith('data:') && !imgSrc.startsWith('../')) {
-                    imgSrc = '../' + imgSrc;
-                }
+                const imgSrc = prefixAsset(p.image || defaultLogo);
                 return `
                 <article class="project-card animate-fade-in">
                     <div class="project-image">
