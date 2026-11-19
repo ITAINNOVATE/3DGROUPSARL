@@ -68,6 +68,9 @@
                 <button class="nav-item-btn" data-tab="pages">
                     <span class="icon">📄</span> Gestion des Pages
                 </button>
+                <button class="nav-item-btn" data-tab="about">
+                    <span class="icon">🏛️</span> Page À Propos
+                </button>
                 <button class="nav-item-btn" data-tab="projects">
                     <span class="icon">🌲</span> Gestion des Projets
                 </button>
@@ -172,6 +175,7 @@
                         <p style="color: var(--admin-text-muted); margin-bottom: 1.25rem;">Accédez directement aux sections principales pour effectuer vos mises à jour :</p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                             <button class="btn-action" onclick="switchToTab('pages')">📄 Gérer les Pages</button>
+                            <button class="btn-action" style="background: #15803d; border-color: #15803d;" onclick="switchToTab('about')">🏛️ Modifier la Page À Propos</button>
                             <button class="btn-action btn-secondary" onclick="openProjectModal()">➕ Ajouter un Projet</button>
                             <button class="btn-action btn-secondary" onclick="switchToTab('messages')">📩 Voir les Messages</button>
                             <button class="btn-action btn-secondary" onclick="openImageModal()">🖼️ Téléverser une Image</button>
@@ -214,6 +218,119 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- TAB: A PROPOS MANAGEMENT -->
+                <div id="tab-about" class="tab-pane">
+                    <div class="content-section-header">
+                        <div class="section-title">
+                            <h2>Gestion de la Page « À Propos » (Notre Entreprise)</h2>
+                            <p>Modifiez en direct les textes de présentation, l'image de bannière, la vision, la mission et les valeurs de 3D-GROUPE SARL.</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <a href="about.html" target="_blank" class="btn-action btn-secondary" style="text-decoration: none;">👁️ Voir la Page Publique</a>
+                            <a href="en/about.html" target="_blank" class="btn-action btn-secondary" style="text-decoration: none;">🇬🇧 Version Anglaise</a>
+                        </div>
+                    </div>
+
+                    <!-- Sélecteur de Langue FR / EN -->
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
+                        <button type="button" id="btn-about-lang-fr" class="btn-action active" onclick="switchAboutLang('FR')">🇫🇷 Version Française</button>
+                        <button type="button" id="btn-about-lang-en" class="btn-action btn-secondary" onclick="switchAboutLang('EN')">🇬🇧 English Version</button>
+                    </div>
+
+                    <div class="table-card" style="padding: 1.5rem;">
+                        <form id="about-page-form" class="admin-form">
+                            <h3 style="margin-bottom: 1rem; color: var(--admin-primary); border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🎯</span> 1. Bannière Principale (Hero)
+                            </h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Titre Principal (H1) *</label>
+                                    <input type="text" id="about-hero-title" required placeholder="Notre Entreprise">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sous-titre d'accroche (Lead) *</label>
+                                    <input type="text" id="about-hero-subtitle" required placeholder="L'expertise au service du développement durable...">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Image de Bannière / Fond *</label>
+                                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                    <input type="text" id="about-hero-image" placeholder="assets/images/project-teck.webp" style="flex: 1; min-width: 200px;">
+                                    <button type="button" class="btn-action" style="white-space: nowrap; font-size: 0.85rem; background: #0284c7; border-color: #0284c7;" onclick="document.getElementById('about-hero-file-input').click()">
+                                        📁 Choisir depuis l'ordinateur
+                                    </button>
+                                    <button type="button" class="btn-action btn-secondary" style="white-space: nowrap; font-size: 0.85rem;" onclick="openMediaPicker('about-hero-image')">
+                                        🖼️ Médiathèque
+                                    </button>
+                                    <input type="file" id="about-hero-file-input" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="img-preview-box" style="margin-top: 0.5rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem;">
+                                    <img loading="lazy" decoding="async" id="about-hero-img-preview" src="assets/images/project-teck.webp" alt="Aperçu Bannière À Propos" style="max-height: 140px; max-width: 100%; border-radius: 6px; object-fit: cover;">
+                                </div>
+                            </div>
+
+                            <h3 style="margin-top: 1.75rem; margin-bottom: 1rem; color: var(--admin-primary); border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📖</span> 2. Présentation Générale (« Qui sommes-nous ? »)
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label>Titre de la section</label>
+                                <input type="text" id="about-whoweare-title" placeholder="Qui sommes-nous ?">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Texte complet de présentation (paragraphes)</label>
+                                <textarea id="about-whoweare-text" rows="6" placeholder="Paragraphes décrivant 3D-GROUPE SARL, son histoire, ses objectifs..."></textarea>
+                                <small style="color: var(--admin-text-muted); display: block; margin-top: 0.25rem;">Astuce : Séparez vos paragraphes par une ligne vide pour créer des paragraphes distincts sur le site.</small>
+                            </div>
+
+                            <h3 style="margin-top: 1.75rem; margin-bottom: 1rem; color: var(--admin-primary); border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🌟</span> 3. ADN de l'Entreprise (Vision, Mission & Valeurs)
+                            </h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Notre Vision</label>
+                                    <textarea id="about-vision" rows="3" placeholder="Devenir la référence en Afrique de l'Ouest..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notre Mission</label>
+                                    <textarea id="about-mission" rows="3" placeholder="Transformer des opportunités foncières en actifs productifs..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Nos Valeurs (une valeur par ligne ou liste à puces)</label>
+                                <textarea id="about-values" rows="4" placeholder="• Expertise & Rigueur&#10;• Durabilité Environnementale&#10;• Transparence & Intégrité&#10;• Engagement Partenarial"></textarea>
+                            </div>
+
+                            <h3 style="margin-top: 1.75rem; margin-bottom: 1rem; color: var(--admin-primary); border-bottom: 1px solid var(--admin-border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🔍</span> 4. Référencement & Balises SEO
+                            </h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Titre SEO (&lt;title&gt;)</label>
+                                    <input type="text" id="about-seo-title" placeholder="À Propos | 3D-GROUPE SARL">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description SEO (Meta Description)</label>
+                                    <input type="text" id="about-seo-desc" placeholder="Présentation de 3D-GROUPE SARL, mission, vision et engagements...">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center;">
+                                <button type="submit" class="btn-action" style="padding: 0.75rem 1.75rem; font-size: 1rem;">
+                                    💾 Enregistrer la Page « À Propos »
+                                </button>
+                                <span id="about-save-indicator" style="font-size: 0.9rem; color: #16a34a; font-weight: 600; display: none;">✓ Enregistré avec succès !</span>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let currentPagesFilter = 'ALL';
+let currentAboutLang = 'FR';
 let activeQuickUploadProjectId = null;
 let activeQuickUploadPageId = null;
 let activeQuickUploadTeamId = null;
@@ -86,6 +87,7 @@ function initAdmin() {
         setupNavigation();
         renderOverview();
         renderPages();
+        renderAbout();
         renderProjects();
         renderTeam();
         renderServices();
@@ -94,6 +96,7 @@ function initAdmin() {
         renderMessages();
         setupDropzone();
         setupForms();
+        setupAboutFormHandlers();
         setupProjectImageUploads();
         setupAllImageUploadHandlers();
     }
@@ -259,6 +262,7 @@ window.filterPagesByLang = function(lang, btn) {
     document.querySelectorAll('.btn-page-filter').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     renderPages();
+        renderAbout();
 };
 
 window.openPageModal = function(id = null) {
@@ -949,6 +953,7 @@ function setupForms() {
             store.savePage(pageData);
             closePageModal();
             renderPages();
+        renderAbout();
             renderOverview();
             showToast("Page enregistrée avec succès !", "success");
         });
@@ -1202,6 +1207,7 @@ function setupAllImageUploadHandlers() {
                         page.heroImage = dataUrl;
                         window.cmsStore.savePage(page);
                         renderPages();
+        renderAbout();
                         showToast(`Image de bannière pour "${page.title}" mise à jour !`, "success");
                     }
                     activeQuickUploadPageId = null;
@@ -1271,6 +1277,120 @@ function setupAllImageUploadHandlers() {
                 };
                 reader.readAsDataURL(file);
             }
+        });
+    }
+}
+
+// ----------------------------------------------------------------------
+// PAGE À PROPOS DÉDIÉE (Notre Entreprise)
+// ----------------------------------------------------------------------
+function renderAbout(lang = currentAboutLang) {
+    const store = window.cmsStore;
+    if (!store) return;
+
+    const pageId = lang === 'FR' ? 'page-about-fr' : 'page-about-en';
+    const page = store.getPageById(pageId);
+    if (!page) return;
+
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+    };
+
+    setVal('about-hero-title', page.heroTitle || (lang === 'FR' ? 'Notre Entreprise' : 'Our Company'));
+    setVal('about-hero-subtitle', page.heroSubtitle || (lang === 'FR' ? "L'expertise au service du développement durable agro-forestier au Bénin." : "Expertise at the service of sustainable agro-forestry development in Benin."));
+    setVal('about-hero-image', page.heroImage || 'assets/images/project-teck.webp');
+    setVal('about-whoweare-title', page.whoWeAreTitle || (lang === 'FR' ? 'Qui sommes-nous ?' : 'Who are we?'));
+    setVal('about-whoweare-text', page.whoWeAreText || page.mainContent || '');
+    setVal('about-vision', page.vision || '');
+    setVal('about-mission', page.mission || '');
+    setVal('about-values', page.values || '');
+    setVal('about-seo-title', page.seoTitle || '');
+    setVal('about-seo-desc', page.seoDescription || '');
+
+    const preview = document.getElementById('about-hero-img-preview');
+    if (preview) {
+        preview.src = page.heroImage || 'assets/images/project-teck.webp';
+    }
+}
+
+window.switchAboutLang = function(lang) {
+    currentAboutLang = lang;
+    const btnFr = document.getElementById('btn-about-lang-fr');
+    const btnEn = document.getElementById('btn-about-lang-en');
+
+    if (lang === 'FR') {
+        if (btnFr) { btnFr.classList.add('active'); btnFr.classList.remove('btn-secondary'); }
+        if (btnEn) { btnEn.classList.remove('active'); btnEn.classList.add('btn-secondary'); }
+    } else {
+        if (btnEn) { btnEn.classList.add('active'); btnEn.classList.remove('btn-secondary'); }
+        if (btnFr) { btnFr.classList.remove('active'); btnFr.classList.add('btn-secondary'); }
+    }
+
+    renderAbout(lang);
+};
+
+function setupAboutFormHandlers() {
+    const aboutForm = document.getElementById('about-page-form');
+    if (aboutForm) {
+        aboutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const store = window.cmsStore;
+            if (!store) return;
+
+            const pageId = currentAboutLang === 'FR' ? 'page-about-fr' : 'page-about-en';
+            const page = store.getPageById(pageId) || { id: pageId, filename: currentAboutLang === 'FR' ? 'about.html' : 'en/about.html', lang: currentAboutLang };
+
+            page.title = currentAboutLang === 'FR' ? 'À Propos' : 'About Us';
+            page.heroTitle = document.getElementById('about-hero-title').value.trim();
+            page.heroSubtitle = document.getElementById('about-hero-subtitle').value.trim();
+            page.heroImage = document.getElementById('about-hero-image').value.trim() || 'assets/images/project-teck.webp';
+            page.whoWeAreTitle = document.getElementById('about-whoweare-title').value.trim();
+            page.whoWeAreText = document.getElementById('about-whoweare-text').value.trim();
+            page.mainContent = page.whoWeAreText;
+            page.vision = document.getElementById('about-vision').value.trim();
+            page.mission = document.getElementById('about-mission').value.trim();
+            page.values = document.getElementById('about-values').value.trim();
+            page.seoTitle = document.getElementById('about-seo-title').value.trim();
+            page.seoDescription = document.getElementById('about-seo-desc').value.trim();
+            page.lastModified = new Date().toISOString().split('T')[0];
+
+            store.savePage(page);
+            renderPages();
+            
+            const indicator = document.getElementById('about-save-indicator');
+            if (indicator) {
+                indicator.style.display = 'inline-block';
+                setTimeout(() => { indicator.style.display = 'none'; }, 4000);
+            }
+            showToast(`Page « À Propos (${currentAboutLang}) » enregistrée avec succès !`, "success");
+        });
+    }
+
+    // Sélecteur d'image pour À Propos depuis l'ordinateur
+    const fileInput = document.getElementById('about-hero-file-input');
+    const imgInput = document.getElementById('about-hero-image');
+    const preview = document.getElementById('about-hero-img-preview');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const dataUrl = re.target.result;
+                    if (imgInput) imgInput.value = dataUrl;
+                    if (preview) preview.src = dataUrl;
+                    showToast(`Bannière À Propos "${file.name}" chargée depuis votre ordinateur !`, "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (imgInput && preview) {
+        imgInput.addEventListener('input', (e) => {
+            preview.src = e.target.value.trim() || 'assets/images/project-teck.webp';
         });
     }
 }

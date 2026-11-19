@@ -111,10 +111,61 @@ function applyPageCustomizations(store) {
 
     // D. Section À Propos (about.html / en/about.html)
     if (currentPath === 'about.html') {
-        if (pageData && pageData.mainContent) {
-            const descEl = document.querySelector('.premium-description');
-            if (descEl) {
-                descEl.innerHTML = `<p>${pageData.mainContent.split("\n\n").join("</p><p>").split("\n").join("<br>")}</p>`;
+        if (pageData) {
+            // Titre de section "Qui sommes-nous ?"
+            if (pageData.whoWeAreTitle) {
+                const whoTitle = document.querySelector('.container-narrow .section-title-modern');
+                if (whoTitle) whoTitle.textContent = pageData.whoWeAreTitle;
+            }
+
+            // Description générale (paragraphes)
+            const textToUse = pageData.whoWeAreText || pageData.mainContent;
+            if (textToUse) {
+                const descEl = document.querySelector('.premium-description');
+                if (descEl) {
+                    descEl.innerHTML = `<p>${textToUse.split("\n\n").join("</p><p>").split("\n").join("<br>")}</p>`;
+                }
+            }
+
+            // Vision
+            if (pageData.vision) {
+                const cards = document.querySelectorAll('.glass-card-premium');
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (h3 && /vision/i.test(h3.textContent)) {
+                        const p = card.querySelector('p');
+                        if (p) p.textContent = pageData.vision;
+                    }
+                });
+            }
+
+            // Mission
+            if (pageData.mission) {
+                const cards = document.querySelectorAll('.glass-card-premium');
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (h3 && /mission/i.test(h3.textContent)) {
+                        const p = card.querySelector('p');
+                        if (p) p.textContent = pageData.mission;
+                    }
+                });
+            }
+
+            // Valeurs
+            if (pageData.values) {
+                const cards = document.querySelectorAll('.glass-card-premium');
+                cards.forEach(card => {
+                    const h3 = card.querySelector('h3');
+                    if (h3 && /(valeurs|values)/i.test(h3.textContent)) {
+                        const ul = card.querySelector('ul');
+                        if (ul) {
+                            const items = pageData.values.split('\n')
+                                .map(line => line.replace(/^[•\s*-]+/, '').trim())
+                                .filter(Boolean);
+                            ul.innerHTML = items.map(it => `<li style="margin-bottom: 0.4rem;">• ${escapeHtml(it)}</li>`).join('');
+                        }
+                    }
+                });
             }
         }
     }
