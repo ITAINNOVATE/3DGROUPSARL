@@ -77,6 +77,10 @@ function initAdmin() {
         if (loginView) loginView.style.display = 'none';
         if (adminLayout) adminLayout.style.display = 'flex';
         
+        // Auto-synchroniser les 34 projets s'il n'y avait que l'ancien cache démo
+        if (store.getProjects().length < 30) {
+            store.syncRealProjects();
+        }
         setupNavigation();
         renderOverview();
         renderPages();
@@ -380,6 +384,17 @@ function renderProjects() {
     `;
     }).join('');
 }
+
+window.reloadAllGalleryProjects = function() {
+    window.cmsStore.syncRealProjects();
+    const searchInput = document.getElementById('project-search-input');
+    const catFilter = document.getElementById('project-category-filter');
+    if (searchInput) searchInput.value = '';
+    if (catFilter) catFilter.value = 'ALL';
+    renderProjects();
+    renderOverview();
+    showToast("Les 34 projets avec leurs photos ont été rechargés avec succès !", "success");
+};
 
 window.filterProjectsList = function() {
     renderProjects();

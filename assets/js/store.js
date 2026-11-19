@@ -3,8 +3,16 @@
  * Manages central data state with LocalStorage persistence and fallback defaults.
  */
 
-const STORAGE_KEY = '3d_group_cms_data_v1';
+const STORAGE_KEY = '3d_group_cms_data_v2';
 const AUTH_KEY = '3d_group_admin_auth';
+
+// Nettoyer l'ancien cache obsolète v1 pour forcer le chargement des 34 projets
+try {
+    if (localStorage.getItem('3d_group_cms_data_v1')) {
+        localStorage.removeItem('3d_group_cms_data_v1');
+    }
+} catch(e) {}
+
 
 // Default initial dataset
 const INITIAL_DATA = {
@@ -657,7 +665,7 @@ class DataStore {
                     siteInfo: { ...INITIAL_DATA.siteInfo, ...(parsed.siteInfo || {}) },
                     pages: parsed.pages && parsed.pages.length > 0 ? parsed.pages : INITIAL_DATA.pages,
                     images: parsed.images || INITIAL_DATA.images,
-                    projects: (parsed.projects && parsed.projects.length >= 20) ? parsed.projects : INITIAL_DATA.projects,
+                    projects: (parsed.projects && parsed.projects.length >= 30) ? parsed.projects : INITIAL_DATA.projects,
                     team: parsed.team && parsed.team.length > 0 ? parsed.team : INITIAL_DATA.team,
                     services: parsed.services || INITIAL_DATA.services,
                     messages: parsed.messages || INITIAL_DATA.messages
@@ -878,6 +886,13 @@ class DataStore {
             console.error("Format JSON invalide", e);
         }
         return false;
+    }
+
+
+    syncRealProjects() {
+        this.data.projects = JSON.parse(JSON.stringify(INITIAL_DATA.projects));
+        this.saveData();
+        return this.data.projects;
     }
 
     resetToDefault() {
