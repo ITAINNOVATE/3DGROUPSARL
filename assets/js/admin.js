@@ -183,12 +183,38 @@ function renderOverview() {
 // ----------------------------------------------------------------------
 // PAGES MANAGEMENT (Affichage & Modification de toutes les pages)
 // ----------------------------------------------------------------------
+let pagesViewMode = 'cards'; // 'cards' ou 'table'
+
+window.setPagesViewMode = function(mode) {
+    pagesViewMode = mode;
+    const btnCards = document.getElementById('btn-view-cards');
+    const btnTable = document.getElementById('btn-view-table');
+    const cardsContainer = document.getElementById('pages-cards-container');
+    const tableCard = document.getElementById('pages-table-card');
+
+    if (mode === 'cards') {
+        if (btnCards) { btnCards.classList.add('active'); btnCards.classList.remove('btn-secondary'); }
+        if (btnTable) { btnTable.classList.remove('active'); btnTable.classList.add('btn-secondary'); }
+        if (cardsContainer) cardsContainer.style.display = 'grid';
+        if (tableCard) tableCard.style.display = 'none';
+    } else {
+        if (btnTable) { btnTable.classList.add('active'); btnTable.classList.remove('btn-secondary'); }
+        if (btnCards) { btnCards.classList.remove('active'); btnCards.classList.add('btn-secondary'); }
+        if (cardsContainer) cardsContainer.style.display = 'none';
+        if (tableCard) tableCard.style.display = 'block';
+    }
+};
+
+window.filterPagesList = function() {
+    renderPages();
+};
+
 function renderPages() {
     const store = window.cmsStore;
     if (!store) return;
-
+    const cardsContainer = document.getElementById('pages-cards-container');
     const tbody = document.getElementById('pages-table-body');
-    if (!tbody) return;
+    if (!cardsContainer && !tbody) return;
 
     const allPages = store.getPages() || [];
     
@@ -200,69 +226,275 @@ function renderPages() {
     if (countFr) countFr.textContent = allPages.filter(p => p.lang === 'FR').length;
     if (countEn) countEn.textContent = allPages.filter(p => p.lang === 'EN').length;
 
-    const filtered = allPages.filter(p => {
+    // Filters
+    const searchInput = document.getElementById('page-search-input');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    let filtered = allPages.filter(p => {
         if (currentPagesFilter === 'ALL') return true;
         return p.lang === currentPagesFilter;
     });
 
-    if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--admin-text-muted);">Aucune page trouvée pour ce filtre.</td></tr>`;
-        return;
+    if (query) {
+        filtered = filtered.filter(p => 
+            (p.title && p.title.toLowerCase().includes(query)) ||
+            (p.filename && p.filename.toLowerCase().includes(query)) ||
+            (p.heroTitle && p.heroTitle.toLowerCase().includes(query)) ||
+            (p.mainContent && p.mainContent.toLowerCase().includes(query)) ||
+            (p.extraContent && p.extraContent.toLowerCase().includes(query))
+        );
     }
 
-    tbody.innerHTML = filtered.map(p => {
-        const langBadge = p.lang === 'FR' 
-            ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">🇫🇷 FR</span>`
-            : `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🇬🇧 EN</span>`;
-        
-        const heroImg = p.heroImage || 'assets/images/hero-drone.webp';
+    // 1. RENDER CARDS VIEW (Vue Contenu & Fiches)
+    if (cardsContainer) {
+        if (filtered.length === 0) {
+            cardsContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px solid var(--admin-border); color: var(--admin-text-muted);">Aucune page ne correspond à votre recherche.</div>`;
+        } else {
+            cardsContainer.innerHTML = filtered.map(p => {
+                const langBadge = p.lang === 'FR' 
+                    ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">🇫🇷 FR</span>`
+                    : `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🇬🇧 EN</span>`;
+                
+                const heroImg = p.heroImage || 'assets/images/hero-drone.webp';
+                const mainText = p.mainContent || p.whoWeAreText || 'Aucun contenu textuel disponible.';
 
-        return `
-            <tr>
-                <td style="width: 70px;">
-                    <img loading="lazy" decoding="async" src="${heroImg}" alt="${escapeHtml(p.title)}" class="table-img-thumb" style="width: 58px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); cursor: pointer;" onclick="openPageModal('${p.id}')" onerror="this.src='assets/images/logo.webp'">
-                </td>
-                <td>${langBadge}</td>
-                <td>
-                    <code style="background: rgba(0,0,0,0.04); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.85rem;">
+                return `
+                <div class="page-content-card" style="background: #ffffff; border: 1px solid var(--admin-border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    <!-- Bannière & En-tête -->
+                    <div style="position: relative; height: 135px; overflow: hidden; background: #0f172a;">
+                        <img loading="lazy" decoding="async" src="${heroImg}" alt="${escapeHtml(p.title)}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;" onerror="this.src='assets/images/logo.webp'">
+                        <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; align-items: center;">
+                            ${langBadge}
+                            <span class="badge" style="background: rgba(15, 23, 42, 0.75); color: #ffffff; backdrop-filter: blur(4px); font-size: 0.75rem;">
+                                📄 ${escapeHtml(p.filename)}
+                            </span>
+                        </div>
+                        <div style="position: absolute; bottom: 8px; right: 10px;">
+                            <button class="btn-action" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; background: rgba(2, 132, 199, 0.9); border: none;" onclick="triggerQuickPageImageUpload('${p.id}')" title="Changer la photo depuis l'ordinateur">
+                                📁 Photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Corps de la carte -->
+                    <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
+                            <h3 style="margin: 0; font-size: 1.15rem; color: var(--admin-text-main); font-weight: 700;">
+                                ${escapeHtml(p.title)}
+                            </h3>
+                            <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 0.72rem;">
+                                ${escapeHtml(p.status || 'En ligne')}
+                            </span>
+                        </div>
+
+                        <div style="font-size: 0.88rem; color: var(--admin-primary); font-weight: 600; margin-bottom: 0.35rem;">
+                            🎯 ${escapeHtml(p.heroTitle || p.title)}
+                        </div>
+
+                        ${p.heroSubtitle ? `<div style="font-size: 0.8rem; color: var(--admin-text-muted); font-style: italic; margin-bottom: 0.75rem; line-height: 1.4;">« ${escapeHtml(p.heroSubtitle)} »</div>` : ''}
+
+                        <!-- Aperçu du Texte Principal -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; font-size: 0.83rem; line-height: 1.55; color: #334155; margin-bottom: 0.85rem; flex: 1;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 0.35rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                📖 Contenu Textuel :
+                            </strong>
+                            <div style="display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                                ${escapeHtml(mainText)}
+                            </div>
+                        </div>
+
+                        ${p.extraContent ? `
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.78rem; color: #166534; margin-bottom: 0.85rem;">
+                            <strong>✨ Sections Additionnelles :</strong>
+                            <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-top: 0.15rem;">
+                                ${escapeHtml(p.extraContent)}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Actions Bas de Carte -->
+                        <div style="display: flex; gap: 0.4rem; justify-content: space-between; align-items: center; border-top: 1px solid var(--admin-border); padding-top: 0.75rem; margin-top: auto;">
+                            <button class="btn-action" style="padding: 0.35rem 0.75rem; font-size: 0.82rem;" onclick="openPageViewModal('${p.id}')">
+                                📖 Voir Tout
+                            </button>
+                            <div style="display: flex; gap: 0.35rem;">
+                                <button class="btn-action btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.82rem;" onclick="openPageModal('${p.id}')" title="Modifier les textes">
+                                    ✏️ Modifier
+                                </button>
+                                <a href="${escapeHtml(p.filename)}" target="_blank" class="btn-table-action" title="Voir la page publique" style="text-decoration:none;">
+                                    👁️
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+    }
+
+    // 2. RENDER TABLE VIEW (Vue Tableau)
+    if (tbody) {
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--admin-text-muted);">Aucune page trouvée pour ce filtre.</td></tr>`;
+        } else {
+            tbody.innerHTML = filtered.map(p => {
+                const langBadge = p.lang === 'FR' 
+                    ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">🇫🇷 FR</span>`
+                    : `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🇬🇧 EN</span>`;
+                
+                const heroImg = p.heroImage || 'assets/images/hero-drone.webp';
+                const mainText = p.mainContent || p.whoWeAreText || '-';
+
+                return `
+                    <tr>
+                        <td style="width: 70px;">
+                            <img loading="lazy" decoding="async" src="${heroImg}" alt="${escapeHtml(p.title)}" class="table-img-thumb" style="width: 58px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); cursor: pointer;" onclick="openPageViewModal('${p.id}')" onerror="this.src='assets/images/logo.webp'">
+                        </td>
+                        <td>${langBadge}</td>
+                        <td>
+                            <div style="font-weight: 600; color: var(--admin-text-main);">${escapeHtml(p.title)}</div>
+                            <code style="background: rgba(0,0,0,0.04); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.78rem;">
+                                ${escapeHtml(p.filename)}
+                            </code>
+                        </td>
+                        <td style="max-width: 180px; font-size: 0.85rem; color: var(--admin-primary); font-weight: 500;">
+                            ${escapeHtml(p.heroTitle || '-')}
+                        </td>
+                        <td style="max-width: 280px; font-size: 0.83rem; color: #334155;">
+                            <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;">
+                                ${escapeHtml(mainText)}
+                            </div>
+                            <button type="button" class="btn-action btn-secondary" style="padding: 0.15rem 0.45rem; font-size: 0.75rem; margin-top: 0.3rem;" onclick="openPageViewModal('${p.id}')">
+                                📖 Voir le contenu
+                            </button>
+                        </td>
+                        <td>
+                            <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
+                                ${escapeHtml(p.status || 'En ligne')}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                                <button class="btn-action" style="padding: 0.3rem 0.55rem; font-size: 0.78rem;" onclick="openPageViewModal('${p.id}')" title="Lire tout le contenu">
+                                    📖 Lire
+                                </button>
+                                <button class="btn-action btn-secondary" style="padding: 0.3rem 0.55rem; font-size: 0.78rem;" onclick="openPageModal('${p.id}')" title="Modifier les textes">
+                                    ✏️
+                                </button>
+                                <button class="btn-action" style="padding: 0.3rem 0.55rem; font-size: 0.78rem; background: #0284c7; border-color: #0284c7;" onclick="triggerQuickPageImageUpload('${p.id}')" title="Changer la photo">
+                                    📁
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+}
+
+window.openPageViewModal = function(id) {
+    const store = window.cmsStore;
+    const p = store.getPageById(id);
+    if (!p) return;
+
+    const modal = document.getElementById('page-view-modal');
+    const titleEl = document.getElementById('pv-modal-title');
+    const body = document.getElementById('pv-modal-body');
+    const footer = document.getElementById('pv-modal-footer');
+    if (!modal || !body || !footer) return;
+
+    if (titleEl) titleEl.textContent = `Contenu : ${p.title} (${p.lang})`;
+
+    const langBadge = p.lang === 'FR' 
+        ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">🇫🇷 Français</span>`
+        : `<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:700;">🇬🇧 English</span>`;
+
+    const heroImg = p.heroImage || 'assets/images/hero-drone.webp';
+    const mainText = p.mainContent || p.whoWeAreText || 'Aucun texte principal renseigné.';
+
+    body.innerHTML = `
+        <!-- Bannière & En-tête -->
+        <div style="position: relative; height: 160px; border-radius: 8px; overflow: hidden; margin-bottom: 1.25rem; background: #0f172a;">
+            <img src="${heroImg}" alt="${escapeHtml(p.title)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/logo.webp'">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.2)); display: flex; flex-direction: column; justify-content: flex-end; padding: 1.25rem;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.35rem; align-items: center;">
+                    ${langBadge}
+                    <code style="background: rgba(255,255,255,0.25); color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">
                         ${escapeHtml(p.filename)}
                     </code>
-                </td>
-                <td style="font-weight: 600; color: var(--admin-text-main);">
-                    ${escapeHtml(p.title)}
-                </td>
-                <td style="max-width: 220px; font-size: 0.85rem; color: var(--admin-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-                    ${escapeHtml(p.heroTitle || '-')}
-                </td>
-                <td>
-                    <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
-                        ${escapeHtml(p.status || 'En ligne')}
-                    </span>
-                </td>
-                <td>
-                    <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-                        <a href="${escapeHtml(p.filename)}" target="_blank" class="btn-table-action" title="Voir la page publique" style="text-decoration:none;">
-                            👁️
-                        </a>
-                        <button class="btn-action btn-secondary" style="padding: 0.3rem 0.55rem; font-size: 0.78rem;" onclick="openPageModal('${p.id}')" title="Modifier les textes et informations">
-                            ✏️ Éditer
-                        </button>
-                        <button class="btn-action" style="padding: 0.3rem 0.55rem; font-size: 0.78rem; background: #0284c7; border-color: #0284c7;" onclick="triggerQuickPageImageUpload('${p.id}')" title="Changer l'image Hero depuis l'ordinateur">
-                            📁 Photo
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
+                </div>
+                <h2 style="color: white; margin: 0; font-size: 1.35rem;">${escapeHtml(p.heroTitle || p.title)}</h2>
+                ${p.heroSubtitle ? `<p style="color: #cbd5e1; margin: 0.25rem 0 0 0; font-size: 0.88rem; font-style: italic;">${escapeHtml(p.heroSubtitle)}</p>` : ''}
+            </div>
+        </div>
+
+        <!-- Contenu Principal -->
+        <div style="margin-bottom: 1.25rem;">
+            <h4 style="color: var(--admin-primary); margin: 0 0 0.5rem 0; font-size: 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>📖</span> Contenu Textuel Principal de la Page
+            </h4>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.15rem; line-height: 1.7; font-size: 0.95rem; color: #1e293b; white-space: pre-wrap;">${escapeHtml(mainText)}</div>
+        </div>
+
+        <!-- Contenu Complémentaire -->
+        ${p.extraContent ? `
+        <div style="margin-bottom: 1.25rem;">
+            <h4 style="color: var(--admin-primary); margin: 0 0 0.5rem 0; font-size: 1rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>✨</span> Sections & Données Additionnelles
+            </h4>
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; line-height: 1.6; font-size: 0.9rem; color: #166534; white-space: pre-wrap;">${escapeHtml(p.extraContent)}</div>
+        </div>
+        ` : ''}
+
+        <!-- Informations Référencement (SEO) -->
+        <div style="background: #f8fafc; border: 1px solid var(--admin-border); border-radius: 8px; padding: 1rem;">
+            <h4 style="color: #475569; margin: 0 0 0.5rem 0; font-size: 0.88rem;">🔍 Référencement Google & Méta-données</h4>
+            <div style="font-size: 0.85rem; color: #1e293b; line-height: 1.5;">
+                <div><strong>Balise &lt;title&gt; :</strong> ${escapeHtml(p.seoTitle || '-')}</div>
+                <div style="margin-top: 0.25rem;"><strong>Meta Description :</strong> ${escapeHtml(p.seoDescription || '-')}</div>
+            </div>
+        </div>
+    `;
+
+    footer.innerHTML = `
+        <div style="display: flex; gap: 0.5rem; justify-content: space-between; width: 100%; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-action" onclick="closePageViewModal(); openPageModal('${p.id}');">
+                    ✏️ Modifier ce Contenu
+                </button>
+                <button class="btn-action" style="background: #0284c7; border-color: #0284c7;" onclick="closePageViewModal(); triggerQuickPageImageUpload('${p.id}');">
+                    📁 Changer la Bannière
+                </button>
+                <a href="${escapeHtml(p.filename)}" target="_blank" class="btn-action btn-secondary" style="text-decoration:none;">
+                    🌐 Voir sur le site web
+                </a>
+            </div>
+            <button type="button" class="btn-action btn-secondary" onclick="closePageViewModal()">Fermer</button>
+        </div>
+    `;
+
+    modal.classList.add('active');
+};
+
+window.closePageViewModal = function() {
+    const modal = document.getElementById('page-view-modal');
+    if (modal) modal.classList.remove('active');
+};
+
+window.reloadAllPagesContent = function() {
+    window.cmsStore.syncRealPages();
+    renderPages();
+    renderAbout();
+    showToast("Les contenus complets des 14 pages ont été rechargés avec succès !", "success");
+};
 
 window.filterPagesByLang = function(lang, btn) {
     currentPagesFilter = lang;
     document.querySelectorAll('.btn-page-filter').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     renderPages();
-        renderAbout();
 };
 
 window.openPageModal = function(id = null) {
